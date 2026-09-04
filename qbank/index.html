@@ -148,7 +148,7 @@ kbd{border:1px solid var(--line);border-radius:6px;padding:0 5px;font-size:12px;
 <body>
 <header>
   <a class="btn small" id="btn-hub" href="../">← MCAT QMaster</a>
-  <h1>MCAT Passage Bank</h1>
+  <h1 id="app-title">MCAT Passage Bank</h1>
   <span class="spacer"></span>
   <nav class="hdr-nav">
     <button class="small" id="btn-dash">Dashboard</button>
@@ -193,6 +193,18 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const LETTERS = 'ABCDEFGHIJ';
 const PKEY = 'ka-mcat-progress-v1';
+
+/* ---------- embedding detection ---------- */
+// When this app is iframed into the hub page (../index.html), the hub already shows
+// its own header/nav above the iframe, so our own "← MCAT QMaster" link and page title
+// are redundant chrome. Hide just those two, keep Dashboard / Build a Block / ⋯ menu
+// since that's still real in-app navigation. When opened standalone (no parent chrome
+// to rely on), keep the full header exactly as before.
+const EMBEDDED = (function(){ try{ return window.self !== window.top; }catch(e){ return true; } })();
+if(EMBEDDED){
+  const bh=document.getElementById('btn-hub'); if(bh) bh.style.display='none';
+  const at=document.getElementById('app-title'); if(at) at.style.display='none';
+}
 
 /* ---------- progress store ---------- */
 let P = load();
@@ -435,6 +447,18 @@ function renderBlockBar(p){
   const exitB=document.getElementById('btn-exit-block'); exitB.onclick=()=>{ currentBlock=null; const bar=document.getElementById('block-bar'); if(bar) bar.remove(); };
 }
 
+/* ---------- fullscreen (immersive test-taking mode) ---------- */
+// Manual, one-click control: a fullscreen request without a direct user gesture in the
+// same call stack is blocked by browsers, so this is triggered only by the button click
+// below (never called automatically on passage load). Works whether this document is
+// standalone or iframed into the hub (the hub's iframe has allow="fullscreen"/allowfullscreen,
+// which delegates the permission needed for requestFullscreen() to succeed here).
+function updateFullscreenBtn(){
+  const b=document.getElementById('btn-fullscreen'); if(!b) return;
+  b.textContent = document.fullscreenElement ? '⛶ Exit Full Screen' : '⛶ Full Screen';
+}
+document.addEventListener('fullscreenchange', updateFullscreenBtn);
+
 /* ---------- passage view ---------- */
 let timerId=null, strikes={};
 function parkSidebar(){ const sb=$('#sidebar'); if(sb.parentNode!==$('#layout')){ sb.classList.remove('in-dash'); $('#layout').insertBefore(sb,$('#main')); } }
@@ -444,6 +468,7 @@ function renderPassage(p, qi){
   const ps=passState(p.id); ps.last=qi; ps.opened=Date.now(); save();
   const it=p.items[qi]; const st=itemState(it.id)||{}; strikes=st.strikes||{};
   let h='<div id="pv"><div class="bar-top"><span class="title">'+esc(p.title)+'</span><span class="crumb">'+esc(p.uworld.subject)+' › '+esc(p.uworld.section)+' · '+(p.source==='jw'?'Jack Westin: '+esc(p.lesson)+(p.date?' · '+esc(p.date):''):'KA: '+esc(p.lesson))+'</span>'
+   +'<button class="primary" id="btn-fullscreen">'+(document.fullscreenElement?'⛶ Exit Full Screen':'⛶ Full Screen')+'</button>'
    +'<span class="right timer" id="timer">0:00</span><button class="small" id="btn-flag">'+(st.flag?'⚑ Flagged':'⚑ Flag')+'</button><a class="small" style="font-size:12px" href="'+esc(p.url)+'" target="_blank" rel="noopener">'+(p.source==='jw'?'open on Jack Westin':'open on Khan Academy')+'</a></div>';
   h+='<div class="split">'+(p.passage?'<div id="passage" class="md">'+md(p.passage, Object.assign({}, it.widgets, p.passageWidgets||{}), p)+'</div>':'')+'<div id="qpane"'+(p.passage?'':' style="max-width:900px;margin:0 auto;flex-basis:100%"')+'>';
   h+='<div class="qnav">'+p.items.map((x,i)=>{ const s=itemState(x.id); const c=(i===qi?'cur ':'')+(s&&s.answered?(s.correct?'ok':'bad'):'')+(s&&s.flag?' flagged':''); return '<button class="'+c+'" data-q="'+i+'">'+(i+1)+'</button>'; }).join('')+'</div>';
@@ -478,6 +503,11 @@ function renderPassage(p, qi){
   const rt=$('#btn-retry'); if(rt) rt.onclick=()=>{ P.items[it.id]={flag:st.flag}; save(); renderPassage(p,qi); };
   const ex=$('#btn-expl'); if(ex) ex.onclick=()=>{ let s=itemState(it.id)||{}; s.showExpl=true; P.items[it.id]=s; save(); renderPassage(p,qi); };
   $('#btn-flag').onclick=()=>{ let s=itemState(it.id)||{}; s.flag=!s.flag; P.items[it.id]=s; save(); renderPassage(p,qi); };
+  $('#btn-fullscreen').onclick=()=>{
+    if(document.fullscreenElement){ document.exitFullscreen().catch(e=>console.warn('exitFullscreen failed',e)); }
+    else { document.documentElement.requestFullscreen().catch(e=>console.warn('requestFullscreen failed',e)); }
+  };
+  updateFullscreenBtn();
   $('#btn-prev').onclick=()=>{ location.hash='#/passage/'+p.id+'/'+(qi-1); };
   $('#btn-next').onclick=()=>{ location.hash='#/passage/'+p.id+'/'+(qi+1); };
   $('#notes').oninput=(e)=>{ ps.notes=e.target.value; save(); };
