@@ -310,8 +310,11 @@ function inline(s){
   s=s.replace(/(\d+)/g,(m,i)=>maths[+i]);
   return s;
 }
+// A GFM delimiter row: pipes, dashes, colons and spaces only, e.g. "- | - | -" or "|:---|---:|".
+// Khan Academy's tables use single dashes and often omit the leading pipe, so both are allowed.
+function isTableDelim(l){ return /^\s*\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)+\|?\s*$/.test(l); }
 function tableHtml(lines){
-  const rows=lines.filter(l=>!/^\s*\|?\s*:?-{2,}/.test(l)).map(l=>l.trim().replace(/^\|/,'').replace(/\|$/,'').split('|').map(c=>c.trim()));
+  const rows=lines.filter(l=>!isTableDelim(l)).map(l=>l.trim().replace(/^\|/,'').replace(/\|$/,'').split('|').map(c=>c.trim()));
   if(!rows.length) return '';
   let h='<table>'; rows.forEach((r,i)=>{ h+='<tr>'+r.map(c=>(i===0?'<th>':'<td>')+inline(c)+(i===0?'</th>':'</td>')).join('')+'</tr>'; }); return h+'</table>';
 }
@@ -326,7 +329,14 @@ function md(src, widgets, ctx){
     // widget-only block
     const wm=b.trim().match(/^\[\[☃ ([^\]]+)\]\]$/);
     if(wm){ out+=widgetHtml(wm[1].trim(), widgets, ctx); continue; }
-    if(lines.length>1 && lines.every(l=>/^\s*\|/.test(l)||/^\s*:?-{2,}/.test(l))){ out+=tableHtml(lines); continue; }
+    // A table is either every line pipe-prefixed, or a delimiter row whose preceding line
+    // holds the headers. Anything above that header line is a caption, kept as its own text.
+    const di=lines.findIndex((l,i)=>i>0 && isTableDelim(l) && lines[i-1].includes('|'));
+    if(lines.length>1 && (lines.every(l=>/^\s*\|/.test(l)||isTableDelim(l)) || di>0)){
+      if(di>1) out+='<p>'+inline(lines.slice(0,di-1).join(' '))+'</p>';
+      out+=tableHtml(di>0?lines.slice(di-1):lines);
+      continue;
+    }
     if(lines.every(l=>/^\s*([-*+]|\d+\.)\s+/.test(l))){ const ol=/^\s*\d+\./.test(lines[0]); out+=(ol?'<ol>':'<ul>')+lines.map(l=>'<li>'+inline(l.replace(/^\s*([-*+]|\d+\.)\s+/,''))+'</li>').join('')+(ol?'</ol>':'</ul>'); continue; }
     const hm=b.match(/^(#{1,6})\s+(.*)$/s); if(hm && lines.length===1){ out+='<h'+hm[1].length+'>'+inline(hm[2])+'</h'+hm[1].length+'>'; continue; }
     if(/^>/.test(b)){ out+='<blockquote>'+inline(lines.map(l=>l.replace(/^>\s?/,'')).join(' '))+'</blockquote>'; continue; }
