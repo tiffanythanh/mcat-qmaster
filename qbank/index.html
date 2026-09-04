@@ -6,7 +6,7 @@
 <title>Qbanks — MCAT QMaster</title>
 <link rel="stylesheet" href="katex/katex.min.css">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Roboto:wght@400;500;700&display=swap">
 <style>
 /* ---------- site bar (shared chrome with the rest of MCAT QMaster) ---------- */
 #sitebar{
@@ -32,7 +32,7 @@
 :root{
   --bg:#1e1f22; --bg2:#26272b; --bg3:#2f3035; --line:#3a3b40; --text:#e6e6e6; --muted:#9a9ca3;
   --accent:#2F6FED; --ok:#3fbf7f; --bad:#e35d5d; --warn:#e0b23f; --flag:#ff9f43;
-  --pass-bg:#232428; --serif:Georgia,"Times New Roman",serif; --sans:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --pass-bg:#232428; --serif:Georgia,"Times New Roman",serif; --sans:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif; --read:"Roboto",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
 }
 html[data-theme="light"]{
   --bg:#f7f8fa; --bg2:#ffffff; --bg3:#f1f3f7; --line:#e5e8ee; --text:#1d1f24; --muted:#767b87; --pass-bg:#ffffff;
@@ -108,7 +108,9 @@ table.simple td.n{text-align:right;font-variant-numeric:tabular-nums}
 #pv .bar-top .title{font-weight:600;font-size:15px}
 #pv .bar-top .crumb{color:var(--muted);font-size:12.5px}
 #pv .split{display:flex;flex:1;min-height:0}
-#passage{flex:1 1 50%;min-width:0;overflow:auto;padding:24px 32px;background:var(--pass-bg);border-right:1px solid var(--line);font-family:var(--sans);font-size:16px;line-height:1.62}
+/* Test content (passage, stem, answer choices) reads in Roboto; the app chrome stays Manrope. */
+#passage,.stem,.choice .body,.expl,.cexpl{font-family:var(--read)}
+#passage{flex:1 1 50%;min-width:0;overflow:auto;padding:24px 32px;background:var(--pass-bg);border-right:1px solid var(--line);font-size:16px;line-height:1.62}
 #qpane{flex:1 1 50%;min-width:0;overflow:auto;padding:20px 28px;display:flex;flex-direction:column}
 .qnav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .qnav button{width:34px;height:30px;padding:0;border-radius:8px;position:relative}
@@ -294,13 +296,47 @@ function renderMath(tex, display){ try{ return katex.renderToString(tex,{display
 function inline(s){
   // protect math
   const maths=[]; s=s.replace(/\\\$/g,'\x03');
-  s=s.replace(/\$\$([\s\S]+?)\$\$/g,(m,t)=>{maths.push(renderMath(t.replace(/\x03/g,'\\$'),true));return ''+(maths.length-1)+'';});
-  s=s.replace(/\$([^$\n]+?)\$/g,(m,t)=>{maths.push(renderMath(t.replace(/\x03/g,'\\$'),false));return ''+(maths.length-1)+'';});
+  // Scan for $...$ / $$...$$ spans left to right, tracking brace depth so a $ inside
+  // \text{...} (at any nesting — e.g. \text{LiAlH$_4$}, or \text{C$_\text{x}$...}) is
+  // never mistaken for the delimiter that closes the OUTER expression, and so that a run
+  // of touching spans ("$_3$$^-$", "$\\dfrac{1}{2}$$\\rho$$_1$") each resolve as their
+  // own span rather than one swallowing the next. A regex can't track nesting depth; this
+  // replaces the previous two-pass display/inline regex extraction entirely.
+  s=(function(src){
+    let out='', i=0; const n=src.length;
+    while(i<n){
+      if(src[i]!=='$'){ out+=src[i]; i++; continue; }
+      let display = src[i+1]==='$';
+      const openLen = display?2:1;
+      let j=i+openLen, depth=0, closed=-1, tex='';
+      while(j<n){
+        const c=src[j];
+        if(!display && c==='\n') break;
+        if(c==='{'){ depth++; tex+=c; j++; continue; }
+        if(c==='}'){ depth--; tex+=c; j++; continue; }
+        // A $ nested inside braces (\text{$_4$}) is KaTeX's own documented way to switch
+        // back into math mode within \text{} — kept as-is, not treated as our delimiter.
+        if(c==='$' && depth<=0 && (!display || src[j+1]==='$')){ closed=j; break; }
+        tex+=c; j++;
+      }
+      if(closed===-1){ out+=src[i]; i++; continue; }
+      // \begin{align} (and friends) is only valid in KaTeX's display mode; single-$
+      // sources that wrap one still mean a display-style multi-line equation.
+      if(/\\begin\{(align|alignat|gather|flalign|multline)\*?\}/.test(tex)) display=true;
+      maths.push(renderMath(tex.replace(/\x03/g,'\\$'), display));
+      out += '\x01'+(maths.length-1)+'\x01';
+      i = closed + openLen;
+    }
+    return out;
+  })(s);
   s=s.replace(/\x03/g,'$');
   s=esc(s);
   s=s.replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+[^)]*)?\)/g,(m,alt,u)=>'<img src="'+esc(imgSrc(u))+'" alt="'+esc(alt)+'">');
   s=s.replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
-  s=s.replace(/\*\*([^*]+?)\*\*/g,'<strong>$1</strong>');
+  // Content between ** ** may itself contain a nested *italic* span (single asterisks);
+  // excluding all asterisks from the match (the old [^*]+?) broke on those, leaving the
+  // whole "**...**" as literal text. This only refuses to cross an actual "**" pair.
+  s=s.replace(/\*\*((?:(?!\*\*)[\s\S])+?)\*\*/g,'<strong>$1</strong>');
   s=s.replace(/__([^_]+?)__/g,'<strong>$1</strong>');
   s=s.replace(/(^|[\s(>])\*([^*\n]+?)\*(?=[\s.,;:!?)<]|$)/g,'$1<em>$2</em>');
   s=s.replace(/(^|[\s(>])_([^_\n]+?)_(?=[\s.,;:!?)<]|$)/g,'$1<em>$2</em>');
