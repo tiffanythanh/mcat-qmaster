@@ -98,6 +98,10 @@ header .hdr-nav{display:flex;gap:8px}
 table.simple{border-collapse:collapse;width:100%;font-size:13.5px}
 table.simple th,table.simple td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left}
 table.simple td.n{text-align:right;font-variant-numeric:tabular-nums}
+/* In full screen, drop the site header and the app's own header — just the passage
+   toolbar (title, timer, flag, Pause, fullscreen toggle) remains, like a real test. */
+:fullscreen #sitebar,:fullscreen header,
+:-webkit-full-screen #sitebar,:-webkit-full-screen header{display:none}
 /* passage view */
 #pv{display:flex;flex-direction:column;height:100%;min-height:0}
 #pv .bar-top{display:flex;align-items:center;gap:10px;padding:12px 20px;border-bottom:1px solid var(--line);background:var(--bg2);flex-wrap:wrap}
@@ -182,7 +186,7 @@ kbd{border:1px solid var(--line);border-radius:6px;padding:0 5px;font-size:12px;
       <circle cx="50" cy="50" r="44" fill="url(#mg)"/>
       <path d="M32,70 L32,30 L50,54 L68,30 L68,70" fill="none" stroke="#fff" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
-    <span><span class="sb-name">MCAT QMaster</span><span class="sb-tag">Free MCAT prep</span></span>
+    <span><span class="sb-name">MCAT QMaster</span><span class="sb-tag">MCAT Prep</span></span>
   </a>
   <nav class="sb-links">
     <a href="../#statement">Statement</a>
@@ -517,7 +521,8 @@ function renderPassage(p, qi){
   const it=p.items[qi]; const st=itemState(it.id)||{}; strikes=st.strikes||{};
   let h='<div id="pv"><div class="bar-top"><span class="title">'+esc(p.title)+'</span><span class="crumb">'+esc(p.uworld.subject)+' › '+esc(p.uworld.section)+' · '+(p.source==='jw'?'Jack Westin: '+esc(p.lesson)+(p.date?' · '+esc(p.date):''):'KA: '+esc(p.lesson))+'</span>'
    +'<span class="right timer" id="timer">0:00</span><button class="small" id="btn-flag">'+(st.flag?'⚑ Flagged':'⚑ Flag')+'</button><a class="small" style="font-size:12px" href="'+esc(p.url)+'" target="_blank" rel="noopener">'+(p.source==='jw'?'open on Jack Westin':'open on Khan Academy')+'</a>'
-   +'<button class="small" id="btn-fullscreen" title="Toggle full screen">'+(document.fullscreenElement?'⛶ Exit':'⛶ Full screen')+'</button></div>';
+   +'<button class="small" id="btn-fullscreen" title="Toggle full screen">'+(document.fullscreenElement?'⛶ Exit':'⛶ Full screen')+'</button>'
+   +'<button class="small" id="btn-pause" title="Pause and return to Dashboard">⏸ Pause</button></div>';
   h+='<div class="split">'+(p.passage?'<div id="passage" class="md">'+md(p.passage, Object.assign({}, it.widgets, p.passageWidgets||{}), p)+'</div>':'')+'<div id="qpane"'+(p.passage?'':' style="max-width:900px;margin:0 auto;flex-basis:100%"')+'>';
   h+='<div class="qnav">'+p.items.map((x,i)=>{ const s=itemState(x.id); const c=(i===qi?'cur ':'')+(s&&s.answered?(s.correct?'ok':'bad'):'')+(s&&s.flag?' flagged':''); return '<button class="'+c+'" data-q="'+i+'">'+(i+1)+'</button>'; }).join('')+'</div>';
   h+='<div class="stem md">'+md(it.stem, it.widgets, p)+'</div>';
@@ -554,6 +559,10 @@ function renderPassage(p, qi){
   $('#btn-fullscreen').onclick=()=>{
     if(document.fullscreenElement){ document.exitFullscreen().catch(e=>console.warn('exitFullscreen failed',e)); }
     else { document.documentElement.requestFullscreen().catch(e=>console.warn('requestFullscreen failed',e)); }
+  };
+  $('#btn-pause').onclick=()=>{
+    if(document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+    location.hash='#/dash';
   };
   updateFullscreenBtn();
   autoFullscreen(p.id);
