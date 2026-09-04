@@ -3,9 +3,32 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MCAT Passage Bank (offline)</title>
+<title>Qbanks — MCAT QMaster</title>
 <link rel="stylesheet" href="katex/katex.min.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap">
 <style>
+/* ---------- site bar (shared chrome with the rest of MCAT QMaster) ---------- */
+#sitebar{
+  display:flex;align-items:center;gap:28px;flex:0 0 auto;
+  padding:14px 28px;background:var(--bg2);border-bottom:1px solid var(--line);
+  font-family:"Manrope",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+}
+#sitebar .sb-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+#sitebar .sb-mark{width:28px;height:28px;flex:0 0 auto}
+#sitebar .sb-name{display:block;font-weight:800;font-size:17px;letter-spacing:-.01em;color:var(--text);line-height:1.15}
+#sitebar .sb-tag{display:block;font-size:11px;font-weight:500;color:var(--muted)}
+#sitebar .sb-links{display:flex;gap:2px;margin-left:auto;flex-wrap:wrap}
+#sitebar .sb-links a{
+  font:600 13.5px "Manrope",sans-serif;color:var(--muted);
+  padding:8px 12px;border-radius:6px;text-decoration:none;
+}
+#sitebar .sb-links a:hover{color:var(--accent)}
+#sitebar .sb-links a[aria-current="page"]{color:var(--accent)}
+@media (max-width:640px){
+  #sitebar{gap:12px;padding:12px 16px}
+  #sitebar .sb-links a{padding:6px 8px;font-size:12.5px}
+}
 :root{
   --bg:#1e1f22; --bg2:#26272b; --bg3:#2f3035; --line:#3a3b40; --text:#e6e6e6; --muted:#9a9ca3;
   --accent:#2F6FED; --ok:#3fbf7f; --bad:#e35d5d; --warn:#e0b23f; --flag:#ff9f43;
@@ -146,9 +169,31 @@ kbd{border:1px solid var(--line);border-radius:6px;padding:0 5px;font-size:12px;
 </style>
 </head>
 <body>
+<div id="sitebar">
+  <a class="sb-brand" href="../">
+    <svg class="sb-mark" viewBox="0 0 100 100" aria-hidden="true">
+      <defs>
+        <linearGradient id="mg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#1E4FD1"/>
+          <stop offset="1" stop-color="#4FA8F0"/>
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="48" fill="#fff"/>
+      <circle cx="50" cy="50" r="44" fill="url(#mg)"/>
+      <path d="M32,70 L32,30 L50,54 L68,30 L68,70" fill="none" stroke="#fff" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span><span class="sb-name">MCAT QMaster</span><span class="sb-tag">Free MCAT prep</span></span>
+  </a>
+  <nav class="sb-links">
+    <a href="../#statement">Statement</a>
+    <a href="./" aria-current="page">Qbanks</a>
+    <a href="../#ai">AI Practice</a>
+    <a href="../#videos">Videos</a>
+    <a href="../#reviews">Reviews</a>
+    <a href="../#anki">Anki</a>
+  </nav>
+</div>
 <header>
-  <a class="btn small" id="btn-hub" href="../">← MCAT QMaster</a>
-  <h1 id="app-title">MCAT Passage Bank</h1>
   <span class="spacer"></span>
   <nav class="hdr-nav">
     <button class="small" id="btn-dash">Dashboard</button>
@@ -195,17 +240,6 @@ const LETTERS = 'ABCDEFGHIJ';
 const PKEY = 'ka-mcat-progress-v1';
 
 /* ---------- embedding detection ---------- */
-// When this app is iframed into the hub page (../index.html), the hub already shows
-// its own header/nav above the iframe, so our own "← MCAT QMaster" link and page title
-// are redundant chrome. Hide just those two, keep Dashboard / Build a Block / ⋯ menu
-// since that's still real in-app navigation. When opened standalone (no parent chrome
-// to rely on), keep the full header exactly as before.
-const EMBEDDED = (function(){ try{ return window.self !== window.top; }catch(e){ return true; } })();
-if(EMBEDDED){
-  const bh=document.getElementById('btn-hub'); if(bh) bh.style.display='none';
-  const at=document.getElementById('app-title'); if(at) at.style.display='none';
-}
-
 /* ---------- progress store ---------- */
 let P = load();
 function load(){ try{ const j=JSON.parse(localStorage.getItem(PKEY)); if(j && j.items) return j; }catch(e){} return {items:{},passages:{},log:[]}; }

@@ -38,8 +38,8 @@
   .brand .name{font-weight:800;font-size:17px;letter-spacing:-.01em;color:var(--ink);line-height:1.15}
   .brand .tag{display:block;font-size:11px;font-weight:500;color:var(--muted)}
   nav.links{display:flex;gap:2px;margin-left:auto;flex-wrap:wrap}
-  nav.links button{font:600 13.5px "Manrope",sans-serif;background:none;border:none;color:var(--muted);padding:8px 12px;border-radius:6px;cursor:pointer}
-  nav.links button:hover{color:var(--blue)}
+  nav.links button,nav.links a{font:600 13.5px "Manrope",sans-serif;background:none;border:none;color:var(--muted);padding:8px 12px;border-radius:6px;cursor:pointer;text-decoration:none}
+  nav.links button:hover,nav.links a:hover{color:var(--blue)}
   nav.links button[aria-current="page"]{color:var(--blue)}
 
   main{display:block}
@@ -57,7 +57,7 @@
   .card{
     border-radius:16px;padding:22px;min-height:200px;
     display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center;
-    cursor:pointer;border:none;font-family:"Manrope",sans-serif;
+    cursor:pointer;border:none;font-family:"Manrope",sans-serif;text-decoration:none;
     transition:transform .15s ease;
   }
   .card:hover{transform:translateY(-2px)}
@@ -149,7 +149,7 @@
     </button>
     <nav class="links" id="nav">
       <button data-goto="statement">Statement</button>
-      <button data-goto="qbanks">Qbanks</button>
+      <a href="qbank/">Qbanks</a>
       <button data-goto="ai">AI Practice</button>
       <button data-goto="videos">Videos</button>
       <button data-goto="reviews">Reviews</button>
@@ -167,12 +167,12 @@
     </div>
 
     <div class="grid">
-      <button class="card blue" data-goto="qbanks">
+      <a class="card blue" href="qbank/">
         <span class="kicker">Free</span>
         <h3>Qbanks</h3>
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l2 2 3-3"/><path d="M10 6h11"/><path d="M3 13l2 2 3-3"/><path d="M10 13h11"/><path d="M3 20l2 2 3-3"/><path d="M10 20h11"/></svg>
         <span class="go">Open Qbank →</span>
-      </button>
+      </a>
       <button class="card sky" data-goto="ai">
         <span class="kicker">Free</span>
         <h3>AI Practice</h3>
@@ -207,12 +207,6 @@
       <p>Good MCAT prep shouldn't cost a fortune. Every resource on this site is free — we didn't build most of it, we just found the best of it and put it in one place.</p>
       <p>Use what helps. Skip what doesn't.</p>
     </div>
-  </section>
-
-  <section class="view" id="view-qbanks">
-    <button class="back" data-goto="home">← Home</button>
-    <div class="sechead"><h2>Qbanks</h2><p>Passages and discretes from Khan Academy + Jack Westin, built into blocks.</p></div>
-    <div class="embed flush"><iframe src="qbank/" title="Qbank" allow="fullscreen" allowfullscreen></iframe></div>
   </section>
 
   <section class="view" id="view-ai">
@@ -304,7 +298,7 @@
 <footer><div class="wrap">MCAT QMaster ©</div></footer>
 
 <script>
-  var VIEWS = ["home","statement","qbanks","ai","videos","reviews","anki"];
+  var VIEWS = ["home","statement","ai","videos","reviews","anki"];
   function goto(id){
     if (VIEWS.indexOf(id) === -1) id = "home";
     VIEWS.forEach(function(v){
