@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.2"
+   width="575"
+   height="417"
+   viewBox="-2 -3 575 417"
+   id="svg2">
+  <metadata
+     id="metadata42">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs40" />
+  <path
+     d="M 109.16833,352.55895 281.1754,55.599396 453.16834,352.55981 z"
+     inkscape:connector-curvature="0"
+     id="path4"
+     style="fill:#5fd35f;stroke:#000000;stroke-width:10;stroke-miterlimit:4" />
+  <text
+     id="text6"
+     style="font-size:22px;font-weight:bold;text-align:center;text-anchor:middle;font-family:Arial">
+    <tspan
+       x="278"
+       y="17"
+       id="tspan8">Liking</tspan>
+    <tspan
+       x="278"
+       y="36"
+       id="tspan10"
+       style="font-size:18px">Intimacy</tspan>
+    <tspan
+       x="466"
+       y="163"
+       id="tspan12">Companionate</tspan>
+    <tspan
+       x="466"
+       y="184"
+       id="tspan14"
+       style="font-size:18px">Intimacy + Commitment</tspan>
+    <tspan
+       x="111"
+       y="165"
+       id="tspan16">Romantic Love</tspan>
+    <tspan
+       x="111"
+       y="186"
+       id="tspan18"
+       style="font-size:18px">Passion + Intimacy</tspan>
+    <tspan
+       x="509"
+       y="383"
+       id="tspan20">Empty Love</tspan>
+    <tspan
+       x="509"
+       y="406"
+       id="tspan22"
+       style="font-size:18px">Commitment</tspan>
+    <tspan
+       x="288"
+       y="383"
+       id="tspan24">Fatuous Love</tspan>
+    <tspan
+       x="288"
+       y="406"
+       id="tspan26"
+       style="font-size:18px">Passion + Commitment</tspan>
+    <tspan
+       x="56"
+       y="383"
+       id="tspan28">Infatuation</tspan>
+    <tspan
+       x="56"
+       y="406"
+       id="tspan30"
+       style="font-size:18px">Passion</tspan>
+    <tspan
+       x="280"
+       y="261"
+       id="tspan32">Consummate</tspan>
+    <tspan
+       x="280"
+       y="286"
+       id="tspan34">Love</tspan>
+    <tspan
+       x="280"
+       y="308"
+       id="tspan36"
+       style="font-size:16px">Intimacy + Passion + Commitment</tspan>
+  </text>
+</svg>

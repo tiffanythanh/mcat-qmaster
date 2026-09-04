@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MCAT Passage Bank (offline)</title>
+<link rel="stylesheet" href="katex/katex.min.css">
+<style>
+:root{
+  --bg:#1e1f22; --bg2:#26272b; --bg3:#2f3035; --line:#3a3b40; --text:#e6e6e6; --muted:#9a9ca3;
+  --accent:#4f8cff; --ok:#3fbf7f; --bad:#e35d5d; --warn:#e0b23f; --flag:#ff9f43;
+  --pass-bg:#232428; --serif:Georgia,"Times New Roman",serif; --sans:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+}
+html[data-theme="light"]{
+  --bg:#f5f6f8; --bg2:#ffffff; --bg3:#eef0f4; --line:#d9dce3; --text:#1d1f24; --muted:#6b6f7a; --pass-bg:#ffffff;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.5;display:flex;flex-direction:column;overflow:hidden}
+a{color:var(--accent)}
+button,a.btn{font-family:inherit;font-size:14px;cursor:pointer;border:1px solid var(--line);background:var(--bg3);color:var(--text);border-radius:6px;padding:6px 12px;text-decoration:none;display:inline-block}
+button:hover,a.btn:hover{filter:brightness(1.12)}
+button.primary,a.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.small,a.btn.small{padding:3px 8px;font-size:12px}
+button:disabled{opacity:.5;cursor:not-allowed;filter:none}
+input[type=text],input[type=search],input[type=number],textarea,select{font-family:inherit;font-size:14px;background:var(--bg2);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:6px 8px}
+textarea{width:100%;min-height:90px;resize:vertical}
+header{display:flex;align-items:center;gap:12px;padding:8px 14px;background:var(--bg2);border-bottom:1px solid var(--line);flex:0 0 auto}
+header h1{font-size:16px;margin:0;font-weight:600;white-space:nowrap}
+header .spacer{flex:1}
+header .stat{color:var(--muted);font-size:13px}
+#layout{display:flex;flex:1;min-height:0}
+#sidebar{display:none;background:var(--bg2);border:1px solid var(--line);border-radius:10px;flex-direction:column;min-height:0;margin-bottom:16px}
+#sidebar.in-dash{display:flex}
+#sidebar.in-dash #tree{max-height:70vh}
+#sidebar .tools{padding:8px;border-bottom:1px solid var(--line);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+#sidebar .tools input{flex:1;min-width:120px}
+#tree{overflow:auto;flex:1;font-size:13.5px}
+.tr{display:flex;align-items:center;padding:4px 8px;border-bottom:1px solid var(--line);cursor:pointer;gap:6px}
+.tr:hover{background:var(--bg3)}
+.tr.lvl0{font-weight:600}
+.tr.lvl1{padding-left:22px;font-weight:600}
+.tr.lvl2{padding-left:40px;font-weight:400}
+.tr.lvl3{padding-left:58px;font-weight:400}
+.tr .name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tr .num{width:46px;text-align:right;color:var(--muted);font-variant-numeric:tabular-nums;font-size:12.5px}
+.tr .num.ok{color:var(--ok)} .tr .num.bad{color:var(--bad)}
+.tr .tw{width:12px;color:var(--muted);font-size:11px}
+.tr.active{background:rgba(79,140,255,.18)}
+.tr .dot{width:8px;height:8px;border-radius:50%;background:var(--line);flex:0 0 8px}
+.tr .dot.done{background:var(--ok)} .tr .dot.partial{background:var(--warn)}
+.tr .flag{color:var(--flag);font-size:12px}
+.hdr-row{display:flex;padding:6px 8px;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--line)}
+.hdr-row .name{flex:1}.hdr-row .num{width:46px;text-align:right}
+#main{flex:1;min-width:0;display:flex;flex-direction:column;min-height:0}
+#content{flex:1;min-height:0;overflow:auto}
+.page{padding:22px 28px;max-width:1200px;margin:0 auto}
+.card{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.kpi{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:14px}
+.kpi .v{font-size:26px;font-weight:700}.kpi .l{color:var(--muted);font-size:12.5px}
+.bar{height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;margin-top:6px}
+.bar>i{display:block;height:100%;background:var(--ok)}
+table.simple{border-collapse:collapse;width:100%;font-size:13.5px}
+table.simple th,table.simple td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left}
+table.simple td.n{text-align:right;font-variant-numeric:tabular-nums}
+/* passage view */
+#pv{display:flex;flex-direction:column;height:100%;min-height:0}
+#pv .bar-top{display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--line);background:var(--bg2);flex-wrap:wrap}
+#pv .bar-top .title{font-weight:600;font-size:15px}
+#pv .bar-top .crumb{color:var(--muted);font-size:12.5px}
+#pv .split{display:flex;flex:1;min-height:0}
+#passage{flex:1 1 50%;min-width:0;overflow:auto;padding:20px 26px;background:var(--pass-bg);border-right:1px solid var(--line);font-family:var(--sans);font-size:16px;line-height:1.62}
+#qpane{flex:1 1 50%;min-width:0;overflow:auto;padding:18px 24px;display:flex;flex-direction:column}
+.qnav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.qnav button{width:34px;height:30px;padding:0;border-radius:6px;position:relative}
+.qnav button.cur{outline:2px solid var(--accent)}
+.qnav button.ok{background:rgba(63,191,127,.25);border-color:var(--ok)}
+.qnav button.bad{background:rgba(227,93,93,.25);border-color:var(--bad)}
+.qnav button.flagged::after{content:"⚑";position:absolute;top:-8px;right:-4px;color:var(--flag);font-size:11px}
+.stem{font-size:15.5px;margin-bottom:12px}
+.stem p{margin:0 0 10px}
+.choices{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.choice{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:8px 10px;cursor:pointer;background:var(--bg2)}
+.choice:hover{background:var(--bg3)}
+.choice .letter{font-weight:700;width:26px;height:26px;flex:0 0 26px;border:1px solid var(--line);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;background:var(--bg3)}
+.choice:hover .letter{border-color:var(--accent)}
+.choice.sel .letter{background:var(--accent);border-color:var(--accent);color:#fff}
+.choice .body{cursor:pointer}
+.hl{background:rgba(255,214,0,.45);cursor:pointer;border-radius:2px}
+html[data-theme="light"] .hl{background:rgba(255,230,0,.6)}
+.hl:hover{background:rgba(255,120,0,.45)}
+#passage,.stem{user-select:text}
+.pill.jw{border-color:#7c5cff;color:#a58cff}
+.cexpl{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-size:13.5px;color:var(--muted)}
+.choice.correct .cexpl{color:var(--text)}
+.md .perchoice p{margin:4px 0}
+.md p{margin:0 0 10px}
+.md .passage-title{font-weight:700}
+.stem p:last-child{margin-bottom:0}
+.choice.sel{border-color:var(--accent);background:rgba(79,140,255,.12)}
+.choice.correct{border-color:var(--ok);background:rgba(63,191,127,.14)}
+.choice.wrong{border-color:var(--bad);background:rgba(227,93,93,.14)}
+.choice.struck .body{text-decoration:line-through;opacity:.5}
+.choice .body{flex:1}
+.choice .body p{margin:0}
+.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.verdict{font-weight:700}
+.verdict.ok{color:var(--ok)}.verdict.bad{color:var(--bad)}
+.expl{border-left:3px solid var(--accent);padding:6px 12px;margin:10px 0;background:var(--bg2);border-radius:0 8px 8px 0}
+.expl h4{margin:6px 0;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.expl .step{padding:6px 0;border-bottom:1px dashed var(--line)}
+.expl .step:last-child{border-bottom:0}
+.md img{max-width:100%;height:auto;display:block;margin:8px auto;background:#fff;border-radius:4px}
+.md table{border-collapse:collapse;margin:10px 0;font-family:var(--sans);font-size:14px}
+.md th,.md td{border:1px solid var(--line);padding:4px 8px;vertical-align:top}
+.md th{background:var(--bg3)}
+.md h1,.md h2,.md h3{font-size:1.1em;margin:12px 0 6px}
+.md .caption{text-align:center;color:var(--muted);font-size:13px;font-family:var(--sans)}
+.md .ptitle{font-weight:700;margin-bottom:8px}
+.md .labels{font-size:13px;color:var(--muted)}
+.notes{margin-top:auto;padding-top:12px}
+.notes label{font-size:12.5px;color:var(--muted)}
+.muted{color:var(--muted)}
+.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:1px 8px;font-size:12px;color:var(--muted)}
+.list-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.list-item .t{flex:1}
+.list-item a{text-decoration:none;color:var(--text)}
+.list-item a:hover{color:var(--accent)}
+.right{margin-left:auto}
+.timer{font-variant-numeric:tabular-nums;color:var(--muted);font-size:13px}
+kbd{border:1px solid var(--line);border-radius:4px;padding:0 5px;font-size:12px;background:var(--bg3)}
+.hidden{display:none!important}
+@media (max-width:900px){#sidebar{width:300px;flex-basis:300px}#pv .split{flex-direction:column}#passage{border-right:0;border-bottom:1px solid var(--line);max-height:45%}}
+</style>
+</head>
+<body>
+<header>
+  <a class="btn small" id="btn-hub" href="../">← MCAT QMaster</a>
+  <h1>MCAT Passage Bank</h1>
+  <span class="stat" id="hdr-stat"></span>
+  <span class="spacer"></span>
+  <button class="small" id="btn-dash">Dashboard</button>
+  <button class="small" id="btn-build">Build a Block</button>
+  <button class="small" id="btn-theme">Theme</button>
+  <button class="small" id="btn-export">Export progress</button>
+  <label class="small"><input type="file" id="imp" class="hidden"><button class="small" id="btn-import">Import</button></label>
+  <button class="small" id="btn-reset">Reset</button>
+</header>
+<div id="layout">
+  <aside id="sidebar">
+    <div class="tools">
+      <input type="search" id="search" placeholder="Search passages…">
+      <select id="tree-mode"><option value="uworld">UWorld order</option><option value="ka">Khan Academy order</option></select>
+      <select id="source-mode"><option value="all">Khan Academy + Jack Westin</option><option value="ka">Khan Academy only</option><option value="jw">Jack Westin only</option></select>
+      <select id="content-mode"><option value="all">Passages + question sets</option><option value="passage">Passages only</option><option value="qset">Question sets only</option></select>
+      <label style="font-size:12px;color:var(--muted)"><input type="checkbox" id="hide-done"> hide done</label>
+    </div>
+    <div class="hdr-row"><span class="name">Section / passage</span><span class="num">Qs</span><span class="num">Done</span><span class="num">Right</span></div>
+    <div id="tree"></div>
+  </aside>
+  <div id="main"><div id="content"></div></div>
+</div>
+
+<script src="katex/katex.min.js"></script>
+<script src="data.js"></script>
+<script>
+(function(){
+'use strict';
+const DATA = window.KA_DATA; const IMG = window.KA_IMG || {};
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const LETTERS = 'ABCDEFGHIJ';
+const PKEY = 'ka-mcat-progress-v1';
+
+/* ---------- progress store ---------- */
+let P = load();
+function load(){ try{ const j=JSON.parse(localStorage.getItem(PKEY)); if(j && j.items) return j; }catch(e){} return {items:{},passages:{},log:[]}; }
+function save(){ try{ localStorage.setItem(PKEY, JSON.stringify(P)); }catch(e){} refreshHeader(); }
+function itemState(id){ return P.items[id] || null; }
+function passState(id){ return P.passages[id] || (P.passages[id]={}); }
+
+/* ---------- indexes ---------- */
+const byId = {}; DATA.passages.forEach(p=>byId[p.id]=p);
+const SUBJ = DATA.subjects; // [{name, sections:[names]}]
+function passagesOf(subject, section){ return DATA.passages.filter(p=>p.uworld.subject===subject && p.uworld.section===section); }
+function stats(list){ let qs=0,done=0,right=0,flag=0; for(const p of list){ for(const it of p.items){ qs++; const s=itemState(it.id); if(s&&s.answered){done++; if(s.correct) right++;} if(s&&s.flag) flag++; } } return {qs,done,right,flag}; }
+function pStatus(p){ const s=stats([p]); if(s.done===0) return 'none'; if(s.done>=s.qs) return 'done'; return 'partial'; }
+
+/* ---------- build-a-block ---------- */
+let buildChecked = (()=>{ try{ return JSON.parse(localStorage.getItem('ka-mcat-build-sections'))||{}; }catch(e){ return {}; } })();
+let buildCountsCache = null;
+let buildTotal = '25', buildMax = '15';
+let currentBlock = null; // {chunks:[[passageId,...],...], chunkIndex}
+function buildSecKey(subName,sec){ return subName+'|'+sec; }
+function computeBuildCounts(){
+  if(buildCountsCache) return buildCountsCache;
+  const subj={}, sec={};
+  for(const sub of SUBJ){ let t=0; for(const s of sub.sections){ const list=passagesOf(sub.name,s); const qs=list.reduce((a,p)=>a+p.items.length,0); sec[buildSecKey(sub.name,s)]=qs; t+=qs; } subj[sub.name]=t; }
+  buildCountsCache={subj,sec}; return buildCountsCache;
+}
+function isSecChecked(subName,sec){ return !!buildChecked[buildSecKey(subName,sec)]; }
+function setSecChecked(subName,sec,val){ buildChecked[buildSecKey(subName,sec)]=val; try{ localStorage.setItem('ka-mcat-build-sections',JSON.stringify(buildChecked)); }catch(e){} }
+function isSubjChecked(sub){ return sub.sections.every(s=>isSecChecked(sub.name,s)); }
+function isSubjIndeterminate(sub){ const c=sub.sections.filter(s=>isSecChecked(sub.name,s)).length; return c>0 && c<sub.sections.length; }
+function checkedSections(){ const out=[]; for(const sub of SUBJ) for(const sec of sub.sections) if(isSecChecked(sub.name,sec)) out.push([sub.name,sec]); return out; }
+function eligiblePassages(){ const secs=checkedSections(); if(!secs.length) return []; const set=new Set(secs.map(([a,b])=>a+'|'+b)); return DATA.passages.filter(p=>set.has(p.uworld.subject+'|'+p.uworld.section) && p.items && p.items.length); }
+function canGenerate(){ return eligiblePassages().length>0; }
+function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function generateBlock(total,maxPerBlock){
+  const pool=shuffle(eligiblePassages());
+  const selected=[]; let sum=0;
+  for(const p of pool){ if(sum>=total) break; selected.push(p); sum+=p.items.length; }
+  const chunks=[]; let cur=[], curSum=0;
+  for(const p of selected){ if(cur.length && curSum+p.items.length>maxPerBlock){ chunks.push(cur); cur=[]; curSum=0; } cur.push(p); curSum+=p.items.length; }
+  if(cur.length) chunks.push(cur);
+  return chunks;
+}
+
+/* ---------- markdown / perseus rendering ---------- */
+function imgSrc(u){ return IMG[u] || u; }
+function renderMath(tex, display){ try{ return katex.renderToString(tex,{displayMode:display,throwOnError:false,strict:false}); }catch(e){ return '<code>'+esc(tex)+'</code>'; } }
+function inline(s){
+  // protect math
+  const maths=[]; s=s.replace(/\\\$/g,'\x03');
+  s=s.replace(/\$\$([\s\S]+?)\$\$/g,(m,t)=>{maths.push(renderMath(t.replace(/\x03/g,'\\$'),true));return ''+(maths.length-1)+'';});
+  s=s.replace(/\$([^$\n]+?)\$/g,(m,t)=>{maths.push(renderMath(t.replace(/\x03/g,'\\$'),false));return ''+(maths.length-1)+'';});
+  s=s.replace(/\x03/g,'$');
+  s=esc(s);
+  s=s.replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+[^)]*)?\)/g,(m,alt,u)=>'<img src="'+esc(imgSrc(u))+'" alt="'+esc(alt)+'">');
+  s=s.replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
+  s=s.replace(/\*\*([^*]+?)\*\*/g,'<strong>$1</strong>');
+  s=s.replace(/__([^_]+?)__/g,'<strong>$1</strong>');
+  s=s.replace(/(^|[\s(>])\*([^*\n]+?)\*(?=[\s.,;:!?)<]|$)/g,'$1<em>$2</em>');
+  s=s.replace(/(^|[\s(>])_([^_\n]+?)_(?=[\s.,;:!?)<]|$)/g,'$1<em>$2</em>');
+  s=s.replace(/~~([^~]+?)~~/g,'<del>$1</del>');
+  s=s.replace(/`([^`]+?)`/g,'<code>$1</code>');
+  s=s.replace(/  \n/g,'<br>');
+  s=s.replace(/(\d+)/g,(m,i)=>maths[+i]);
+  return s;
+}
+function tableHtml(lines){
+  const rows=lines.filter(l=>!/^\s*\|?\s*:?-{2,}/.test(l)).map(l=>l.trim().replace(/^\|/,'').replace(/\|$/,'').split('|').map(c=>c.trim()));
+  if(!rows.length) return '';
+  let h='<table>'; rows.forEach((r,i)=>{ h+='<tr>'+r.map(c=>(i===0?'<th>':'<td>')+inline(c)+(i===0?'</th>':'</td>')).join('')+'</tr>'; }); return h+'</table>';
+}
+function md(src, widgets, ctx){
+  if(!src) return '';
+  if(ctx && ctx.fmt==='html') return String(src);
+  src=String(src).replace(/\r/g,'');
+  const blocks=src.split(/\n{2,}/); let out='';
+  for(let b of blocks){
+    b=b.replace(/^\n+|\n+$/g,''); if(!b.trim()) continue;
+    const lines=b.split('\n');
+    // widget-only block
+    const wm=b.trim().match(/^\[\[☃ ([^\]]+)\]\]$/);
+    if(wm){ out+=widgetHtml(wm[1].trim(), widgets, ctx); continue; }
+    if(lines.length>1 && lines.every(l=>/^\s*\|/.test(l)||/^\s*:?-{2,}/.test(l))){ out+=tableHtml(lines); continue; }
+    if(lines.every(l=>/^\s*([-*+]|\d+\.)\s+/.test(l))){ const ol=/^\s*\d+\./.test(lines[0]); out+=(ol?'<ol>':'<ul>')+lines.map(l=>'<li>'+inline(l.replace(/^\s*([-*+]|\d+\.)\s+/,''))+'</li>').join('')+(ol?'</ol>':'</ul>'); continue; }
+    const hm=b.match(/^(#{1,6})\s+(.*)$/s); if(hm && lines.length===1){ out+='<h'+hm[1].length+'>'+inline(hm[2])+'</h'+hm[1].length+'>'; continue; }
+    if(/^>/.test(b)){ out+='<blockquote>'+inline(lines.map(l=>l.replace(/^>\s?/,'')).join(' '))+'</blockquote>'; continue; }
+    // paragraph, may contain inline widgets
+    let para=lines.join(' ');
+    para=para.replace(/\[\[☃ ([^\]]+)\]\]/g,(m,n)=>''+n.trim()+'');
+    let html=inline(para);
+    html=html.replace(/([^]+)/g,(m,n)=>widgetHtml(n,widgets,ctx));
+    out+='<p>'+html+'</p>';
+  }
+  return out;
+}
+function widgetHtml(name, widgets, ctx){
+  const w=widgets&&widgets[name]; if(!w) return '';
+  const o=w.options||{};
+  switch(w.type){
+    case 'radio': return ''; // rendered as choices
+    case 'image': { let h=''; if(o.title) h+='<div class="ptitle">'+inline(o.title)+'</div>'; if(o.backgroundImage&&o.backgroundImage.url) h+='<img src="'+esc(imgSrc(o.backgroundImage.url))+'" alt="'+esc(o.alt||'')+'">'; if(o.labels&&o.labels.length) h+='<div class="labels">'+o.labels.map(l=>inline(l.content||'')).join(' · ')+'</div>'; if(o.caption) h+='<div class="caption">'+inline(o.caption)+'</div>'; return h; }
+    case 'table': { const hd=o.headers||[]; const rows=o.answers||[]; let h='<table>'; if(hd.some(x=>x)) h+='<tr>'+hd.map(c=>'<th>'+inline(c||'')+'</th>').join('')+'</tr>'; rows.forEach(r=>{ h+='<tr>'+r.map(c=>'<td>'+inline(c||'')+'</td>').join('')+'</tr>'; }); return h+'</table>'; }
+    case 'passage': { let h='<div class="passage-widget">'; if(o.passageTitle) h+='<div class="ptitle">'+inline(o.passageTitle)+'</div>'; let t=String(o.passageText||'').replace(/\{\{[^}]*\}\}/g,'').replace(/\^([^\s]+)/g,'<sup>$1</sup>'); h+=md(t,{},ctx); if(o.footnotes) h+='<div class="caption">'+md(o.footnotes,{},ctx)+'</div>'; return h+'</div>'; }
+    case 'explanation': return '<details><summary>'+inline(o.showPrompt||'Explanation')+'</summary>'+md(o.explanation||'',o.widgets||{},ctx)+'</details>';
+    case 'video': return o.location?'<p class="muted">[Video: '+esc(o.location)+']</p>':'';
+    case 'definition': return '<abbr title="'+esc(o.definition||'')+'">'+inline(o.together||'')+'</abbr>';
+    default: return '<p class="muted">[Unsupported widget: '+esc(w.type)+']</p>';
+  }
+}
+
+/* ---------- header / router ---------- */
+function refreshHeader(){ const s=stats(DATA.passages); $('#hdr-stat').textContent = s.done+' / '+s.qs+' questions done · '+(s.done?Math.round(100*s.right/s.done):0)+'% correct · '+DATA.passages.length+' passages'; }
+function route(){ const h=location.hash||'#/dash'; const m=h.match(/^#\/passage\/([^/]+)(?:\/(\d+))?/); if(m && byId[m[1]]) renderPassage(byId[m[1]], m[2]?+m[2]:0); else if(h==='#/build') renderBuild(); else renderDash(); renderTree(); }
+window.addEventListener('hashchange', route);
+
+/* ---------- sidebar tree ---------- */
+const open = JSON.parse(localStorage.getItem('ka-mcat-tree')||'{}');
+function toggle(k){ open[k]=!open[k]; localStorage.setItem('ka-mcat-tree',JSON.stringify(open)); renderTree(); }
+function numCells(s){ return '<span class="num">'+s.qs+'</span><span class="num'+(s.done?' ok':'')+'">'+s.done+'</span><span class="num'+(s.done?(s.right/s.done>=0.7?' ok':' bad'):'')+'">'+(s.done?Math.round(100*s.right/s.done)+'%':'–')+'</span>'; }
+function renderTree(){
+  const q=($('#search').value||'').toLowerCase().trim(); const hide=$('#hide-done').checked; const mode=$('#tree-mode').value; const cmode=$('#content-mode').value; const smode=$('#source-mode').value;
+  const cur=(location.hash.match(/^#\/passage\/([^/]+)/)||[])[1];
+  const filt=p=>(!q||p.title.toLowerCase().includes(q)||p.lesson.toLowerCase().includes(q))&&(!hide||pStatus(p)!=='done')&&(cmode==='all'||p.kind===cmode)&&(smode==='all'||(p.source||'ka')===smode);
+  let h='';
+  const row=(lvl,key,name,list,extra)=>{ const s=stats(list); const isOpen=open[key]||q; return '<div class="tr lvl'+lvl+'" data-k="'+esc(key)+'"><span class="tw">'+(isOpen?'▾':'▸')+'</span><span class="name" title="'+esc(name)+'">'+esc(name)+'</span>'+numCells(s)+'</div>'; };
+  const prow=(lvl,p)=>{ const s=stats([p]); const st=pStatus(p); return '<div class="tr lvl'+lvl+(p.id===cur?' active':'')+'" data-p="'+p.id+'"><span class="dot '+st+'"></span><span class="name" title="'+esc(p.title)+'">'+(p.source==='jw'?'<span class="pill jw" style="font-size:10px;padding:0 5px;margin-right:4px">JW</span>':'')+(p.kind==='qset'?'<span class="pill" style="font-size:10px;padding:0 5px;margin-right:4px">Q set</span>':'')+esc(p.title)+(s.flag?' <span class="flag">⚑</span>':'')+'</span>'+numCells(s)+'</div>'; };
+  if(mode==='uworld'){
+    for(const sub of SUBJ){ const all=DATA.passages.filter(p=>p.uworld.subject===sub.name&&filt(p)); if(q&&!all.length) continue; h+=row(0,'s:'+sub.name,sub.name,all);
+      if(open['s:'+sub.name]||q){ for(const sec of sub.sections){ const list=all.filter(p=>p.uworld.section===sec); if(q&&!list.length) continue; const k='c:'+sub.name+'|'+sec; h+=row(1,k,sec,list); if(open[k]||q){ for(const p of list) h+=prow(2,p); } } } }
+  } else {
+    const units=[...new Set(DATA.passages.map(p=>p.unit))];
+    for(const u of units){ const all=DATA.passages.filter(p=>p.unit===u&&filt(p)); if(q&&!all.length) continue; h+=row(0,'u:'+u,u,all);
+      if(open['u:'+u]||q){ const lessons=[...new Set(all.map(p=>p.lesson))]; for(const l of lessons){ const list=all.filter(p=>p.lesson===l); const k='l:'+u+'|'+l; h+=row(1,k,l,list); if(open[k]||q){ for(const p of list) h+=prow(2,p); } } } }
+  }
+  $('#tree').innerHTML=h;
+  $('#tree').querySelectorAll('.tr[data-k]').forEach(el=>el.onclick=()=>toggle(el.dataset.k));
+  $('#tree').querySelectorAll('.tr[data-p]').forEach(el=>el.onclick=()=>{ location.hash='#/passage/'+el.dataset.p; });
+  const act=$('#tree .tr.active'); if(act) act.scrollIntoView({block:'nearest'});
+}
+$('#search').addEventListener('input',renderTree); $('#hide-done').addEventListener('change',renderTree); $('#tree-mode').addEventListener('change',renderTree); $('#content-mode').addEventListener('change',renderTree); $('#source-mode').addEventListener('change',renderTree);
+
+/* ---------- dashboard ---------- */
+function renderDash(){
+  parkSidebar();
+  const s=stats(DATA.passages);
+  const recent=(P.log||[]).slice(-8).reverse();
+  let h='<div class="page"><h2 style="margin-top:0">Dashboard</h2><div class="grid">'
+   +'<div class="kpi"><div class="v">'+s.done+' <span class="muted" style="font-size:14px">/ '+s.qs+'</span></div><div class="l">questions answered</div><div class="bar"><i style="width:'+(100*s.done/s.qs)+'%"></i></div></div>'
+   +'<div class="kpi"><div class="v">'+(s.done?Math.round(100*s.right/s.done):0)+'%</div><div class="l">overall accuracy</div></div>'
+   +'<div class="kpi"><div class="v">'+DATA.passages.filter(p=>pStatus(p)==='done').length+' <span class="muted" style="font-size:14px">/ '+DATA.passages.length+'</span></div><div class="l">passages completed</div></div>'
+   +'<div class="kpi"><div class="v">'+s.flag+'</div><div class="l">flagged questions</div></div></div>';
+  { const ka=stats(DATA.passages.filter(p=>(p.source||'ka')==='ka')), jw=stats(DATA.passages.filter(p=>p.source==='jw')); h+='<div class="card"><b>Khan Academy:</b> '+ka.done+' / '+ka.qs+' questions ('+DATA.passages.filter(p=>(p.source||'ka')==='ka').length+' sets) · <b>Jack Westin:</b> '+jw.done+' / '+jw.qs+' questions ('+DATA.passages.filter(p=>p.source==='jw').length+' dailies)</div>'; }
+  h+='<div class="card"><h3 style="margin-top:0">By subject</h3><table class="simple"><tr><th>Subject</th><th>Questions</th><th>Done</th><th>Accuracy</th><th></th></tr>';
+  for(const sub of SUBJ){ const st=stats(DATA.passages.filter(p=>p.uworld.subject===sub.name)); const acc=st.done?Math.round(100*st.right/st.done):0; h+='<tr><td>'+esc(sub.name)+'</td><td class="n">'+st.qs+'</td><td class="n">'+st.done+'</td><td class="n">'+(st.done?acc+'%':'–')+'</td><td style="width:180px"><div class="bar"><i style="width:'+acc+'%"></i></div></td></tr>'; }
+  h+='</table></div>';
+  h+='<div class="card"><h3 style="margin-top:0">By section</h3><table class="simple"><tr><th>Section</th><th>Qs</th><th>Done</th><th>Accuracy</th></tr>';
+  for(const sub of SUBJ){ for(const sec of sub.sections){ const list=passagesOf(sub.name,sec); if(!list.length) continue; const st=stats(list); h+='<tr><td><span class="muted">'+esc(sub.name)+' ›</span> '+esc(sec)+'</td><td class="n">'+st.qs+'</td><td class="n">'+st.done+'</td><td class="n">'+(st.done?Math.round(100*st.right/st.done)+'%':'–')+'</td></tr>'; } }
+  h+='</table></div>';
+  const next=DATA.passages.find(p=>pStatus(p)==='partial')||DATA.passages.find(p=>pStatus(p)==='none');
+  if(next) h+='<div class="card"><b>Continue:</b> <a href="#/passage/'+next.id+'">'+esc(next.title)+'</a> <span class="pill">'+esc(next.uworld.subject)+' › '+esc(next.uworld.section)+'</span></div>';
+  const flagged=DATA.passages.filter(p=>p.items.some(it=>itemState(it.id)&&itemState(it.id).flag));
+  if(flagged.length){ h+='<div class="card"><h3 style="margin-top:0">Flagged for review</h3>'; for(const p of flagged){ h+='<div class="list-item"><span class="t"><a href="#/passage/'+p.id+'">'+esc(p.title)+'</a></span><span class="pill">'+p.items.filter(it=>itemState(it.id)&&itemState(it.id).flag).length+' flagged</span></div>'; } h+='</div>'; }
+  if(recent.length){ h+='<div class="card"><h3 style="margin-top:0">Recent activity</h3>'; for(const r of recent){ const p=byId[r.p]; if(!p) continue; h+='<div class="list-item"><span class="t"><a href="#/passage/'+p.id+'/'+r.q+'">'+esc(p.title)+'</a> <span class="muted">Q'+(r.q+1)+'</span></span><span class="'+(r.ok?'verdict ok':'verdict bad')+'">'+(r.ok?'correct':'incorrect')+'</span><span class="muted" style="width:150px;text-align:right">'+new Date(r.t).toLocaleString()+'</span></div>'; } h+='</div>'; }
+  h+='<div class="card muted" style="font-size:13px">Sources: Khan Academy MCAT practice passages (free, created with the AAMC; CC BY-NC-SA) and Jack Westin free daily passages (© Jack Westin). Saved offline for personal study only; do not redistribute. Progress is stored in this browser; use <b>Export progress</b> to back it up. Data snapshot: '+esc(DATA.generated)+'.</div></div>';
+  h=h.replace('<div class="grid">','<h3 style="margin:0 0 8px">Passages by section</h3><div id="tree-slot"></div><div class="grid">');
+  $('#content').innerHTML=h;
+  const sb=$('#sidebar'); $('#tree-slot').appendChild(sb); sb.classList.add('in-dash');
+}
+
+/* ---------- build a block ---------- */
+function renderBuild(){
+  parkSidebar();
+  const counts=computeBuildCounts();
+  let h='<div class="page"><h2 style="margin-top:0">Build a Block</h2>';
+  h+='<div class="card"><div class="hdr-row"><span class="name">Subject / section</span><span class="num">Qs</span></div><div id="build-tree" style="max-height:50vh;overflow:auto">';
+  for(const sub of SUBJ){
+    h+='<div class="tr lvl0" data-row-subject="'+esc(sub.name)+'"><input type="checkbox" class="build-cb" data-subject="'+esc(sub.name)+'"'+(isSubjChecked(sub)?' checked':'')+'><span class="name">'+esc(sub.name)+'</span><span class="num">'+(counts.subj[sub.name]||0)+'</span></div>';
+    for(const sec of sub.sections){
+      h+='<div class="tr lvl1" data-row-subject="'+esc(sub.name)+'" data-row-section="'+esc(sec)+'"><input type="checkbox" class="build-cb" data-subject="'+esc(sub.name)+'" data-section="'+esc(sec)+'"'+(isSecChecked(sub.name,sec)?' checked':'')+'><span class="name">'+esc(sec)+'</span><span class="num">'+(counts.sec[buildSecKey(sub.name,sec)]||0)+'</span></div>';
+    }
+  }
+  h+='</div></div>';
+  h+='<div class="card"><div style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap">'
+   +'<label style="display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--muted)">No. of questions<input type="number" min="1" id="build-total" value="'+esc(buildTotal)+'" style="width:100px"></label>'
+   +'<label style="display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--muted)">Max per block<input type="number" min="1" id="build-max" value="'+esc(buildMax)+'" style="width:100px"></label>'
+   +'<button class="primary" id="btn-build-gen"'+(canGenerate()?'':' disabled')+'>Generate Block</button>'
+   +'<span class="muted" id="build-msg" style="font-size:12.5px"></span>'
+   +'</div></div></div>';
+  $('#content').innerHTML=h;
+  $('#build-tree').querySelectorAll('input.build-cb[data-subject]:not([data-section])').forEach(cb=>{ const sub=SUBJ.find(s=>s.name===cb.dataset.subject); cb.indeterminate=isSubjIndeterminate(sub); });
+  $('#build-tree').querySelectorAll('.tr').forEach(row=>{
+    row.addEventListener('click',(e)=>{ if(e.target.tagName==='INPUT') return; const cb=row.querySelector('input.build-cb'); cb.checked=!cb.checked; cb.dispatchEvent(new Event('change')); });
+  });
+  $('#build-tree').querySelectorAll('input.build-cb').forEach(cb=>{
+    cb.addEventListener('change',()=>{
+      if(cb.dataset.section){ setSecChecked(cb.dataset.subject, cb.dataset.section, cb.checked); }
+      else { const sub=SUBJ.find(s=>s.name===cb.dataset.subject); sub.sections.forEach(s=>setSecChecked(sub.name,s,cb.checked)); }
+      renderBuild();
+    });
+  });
+  $('#build-total').addEventListener('input',e=>{ buildTotal=e.target.value; });
+  $('#build-max').addEventListener('input',e=>{ buildMax=e.target.value; });
+  const genBtn=$('#btn-build-gen');
+  const msg=$('#build-msg');
+  const nSec=checkedSections().length; const elig=eligiblePassages(); const avail=elig.reduce((a,p)=>a+p.items.length,0);
+  if(nSec===0) msg.textContent='Check at least one section to build a block.';
+  else if(avail===0) msg.textContent='No questions available in the selected sections.';
+  else msg.textContent=avail+' question'+(avail===1?'':'s')+' available across '+elig.length+' passage'+(elig.length===1?'':'s')+'.';
+  if(genBtn) genBtn.onclick=()=>{
+    const total=Math.max(1, parseInt(buildTotal,10)||1);
+    const maxPerBlock=Math.max(1, parseInt(buildMax,10)||1);
+    const chunks=generateBlock(total, maxPerBlock);
+    if(!chunks.length){ msg.textContent='No questions available for the selected sections.'; return; }
+    currentBlock={ chunks: chunks.map(c=>c.map(p=>p.id)), chunkIndex:0 };
+    const target='#/passage/'+chunks[0][0].id+'/0';
+    if(location.hash===target) route(); else location.hash=target;
+  };
+}
+function renderBlockBar(p){
+  const old=document.getElementById('block-bar'); if(old) old.remove();
+  const pv=document.getElementById('pv'); if(!pv || !currentBlock) return;
+  const chunkIds=currentBlock.chunks[currentBlock.chunkIndex];
+  if(!chunkIds || !chunkIds.includes(p.id)) return;
+  const chunkPassages=chunkIds.map(id=>byId[id]);
+  const s=stats(chunkPassages); const finished=s.qs>0 && s.done>=s.qs;
+  const idx=chunkIds.indexOf(p.id); const totalBlocks=currentBlock.chunks.length;
+  let html='<div id="block-bar" style="display:flex;align-items:center;gap:10px;padding:6px 14px;border-bottom:1px solid var(--line);background:var(--bg3);font-size:12.5px;flex-wrap:wrap">'
+   +'<span class="pill">Block '+(currentBlock.chunkIndex+1)+' of '+totalBlocks+'</span>'
+   +'<span class="muted">Passage '+(idx+1)+' of '+chunkIds.length+' in this block · '+s.done+' / '+s.qs+' questions done</span>';
+  if(idx<chunkIds.length-1) html+='<button class="small" id="btn-block-next-passage">Next passage in block →</button>';
+  if(totalBlocks>1){
+    if(currentBlock.chunkIndex<totalBlocks-1){ html+='<button class="small primary" id="btn-next-block"'+(finished?'':' disabled')+'>Next Block →</button>'; if(!finished) html+='<span class="muted">(finish all questions in this block to continue)</span>'; }
+    else html+='<span class="muted">Last block.</span>';
+  }
+  html+='<button class="small" id="btn-exit-block">Exit block</button></div>';
+  pv.insertAdjacentHTML('afterbegin', html);
+  const nextP=document.getElementById('btn-block-next-passage'); if(nextP) nextP.onclick=()=>{ location.hash='#/passage/'+chunkIds[idx+1]+'/0'; };
+  const nextB=document.getElementById('btn-next-block'); if(nextB) nextB.onclick=()=>{ if(nextB.disabled) return; currentBlock.chunkIndex++; const nc=currentBlock.chunks[currentBlock.chunkIndex]; location.hash='#/passage/'+nc[0]+'/0'; };
+  const exitB=document.getElementById('btn-exit-block'); exitB.onclick=()=>{ currentBlock=null; const bar=document.getElementById('block-bar'); if(bar) bar.remove(); };
+}
+
+/* ---------- passage view ---------- */
+let timerId=null, strikes={};
+function parkSidebar(){ const sb=$('#sidebar'); if(sb.parentNode!==$('#layout')){ sb.classList.remove('in-dash'); $('#layout').insertBefore(sb,$('#main')); } }
+function renderPassage(p, qi){
+  parkSidebar();
+  qi=Math.max(0,Math.min(qi||0,p.items.length-1));
+  const ps=passState(p.id); ps.last=qi; ps.opened=Date.now(); save();
+  const it=p.items[qi]; const st=itemState(it.id)||{}; strikes=st.strikes||{};
+  let h='<div id="pv"><div class="bar-top"><span class="title">'+esc(p.title)+'</span><span class="crumb">'+esc(p.uworld.subject)+' › '+esc(p.uworld.section)+' · '+(p.source==='jw'?'Jack Westin: '+esc(p.lesson)+(p.date?' · '+esc(p.date):''):'KA: '+esc(p.lesson))+'</span>'
+   +'<span class="right timer" id="timer">0:00</span><button class="small" id="btn-flag">'+(st.flag?'⚑ Flagged':'⚑ Flag')+'</button><a class="small" style="font-size:12px" href="'+esc(p.url)+'" target="_blank" rel="noopener">'+(p.source==='jw'?'open on Jack Westin':'open on Khan Academy')+'</a></div>';
+  h+='<div class="split">'+(p.passage?'<div id="passage" class="md">'+md(p.passage, Object.assign({}, it.widgets, p.passageWidgets||{}), p)+'</div>':'')+'<div id="qpane"'+(p.passage?'':' style="max-width:900px;margin:0 auto;flex-basis:100%"')+'>';
+  h+='<div class="qnav">'+p.items.map((x,i)=>{ const s=itemState(x.id); const c=(i===qi?'cur ':'')+(s&&s.answered?(s.correct?'ok':'bad'):'')+(s&&s.flag?' flagged':''); return '<button class="'+c+'" data-q="'+i+'">'+(i+1)+'</button>'; }).join('')+'</div>';
+  h+='<div class="stem md">'+md(it.stem, it.widgets, p)+'</div>';
+  const radio=it.choices||[]; const multi=!!it.multi;
+  const sel=st.selected||[];
+  if(radio.length) h+='<div class="choices">'+radio.map((c,i)=>{ let cls='choice'; if(st.answered){ if(c.correct) cls+=' correct'; else if(sel.includes(i)) cls+=' wrong'; } else if(sel.includes(i)) cls+=' sel'; if(strikes[i]) cls+=' struck'; return '<div class="'+cls+'" data-i="'+i+'"><span class="letter">'+LETTERS[i]+'</span><span class="body md">'+md(c.content, it.widgets, p)+(st.answered&&c.expl?'<div class="cexpl md">'+md(c.expl, it.widgets, p)+'</div>':'')+'</span></div>'; }).join('')+'</div>';
+  else if(it.numeric) h+='<div class="choices">'+it.numeric.map((n,k)=>'<div style="display:flex;gap:8px;align-items:center"><span class="muted">'+(it.numeric.length>1?'Answer '+(k+1):'Your answer')+':</span><input type="text" class="num-in" data-k="'+k+'" style="width:160px" value="'+esc((st.numAnswer||[])[k]||'')+'" '+(st.answered?'disabled':'')+'>'+(st.answered?'<span class="muted">Correct: <b>'+esc(String(n.value))+'</b></span>':'')+'</div>').join('')+'</div>';
+  else h+='<div class="choices"><div class="muted">This question uses an interactive widget ('+esc((it.unsupported||[]).join(', '))+') that cannot be reproduced offline. <a href="'+esc(p.url)+'" target="_blank" rel="noopener">Open it on Khan Academy</a>, then use "Show explanation" here.</div></div>';
+  h+='<div class="actions">'+(st.answered?'<span class="verdict '+(st.correct?'ok':'bad')+'">'+(st.correct?'Correct':'Incorrect')+'</span>'+(it.difficulty?'<span class="pill">'+esc(it.difficulty)+(it.pct?' · '+Math.round(it.pct)+'% of students correct':'')+'</span>':'')+'<button class="small" id="btn-retry">Retry</button>':'<button class="primary" id="btn-check">Check answer</button>')
+   +'<span class="muted" style="font-size:12px">'+(multi?'select all that apply · click answer text to cross it out':'click the letter to select · click the answer text to cross it out · select passage text to highlight')+'</span><span class="right"></span>'
+   +'<button class="small" id="btn-prev" '+(qi===0?'disabled':'')+'>← Prev</button><button class="small" id="btn-next" '+(qi===p.items.length-1?'disabled':'')+'>Next →</button></div>';
+  if(st.answered||st.showExpl){ h+='<div class="expl md"><h4>Explanation</h4>'+(it.hints.length?it.hints.map(x=>'<div class="step">'+md(x.content,x.widgets,p)+'</div>').join(''):'<div class="muted">No explanation provided.</div>')+'</div>'; }
+  else h+='<div><button class="small" id="btn-expl">Show explanation (marks as viewed)</button></div>';
+  h+='<div class="notes"><label>Notes for this passage</label><textarea id="notes" placeholder="Your notes…">'+esc(ps.notes||'')+'</textarea></div>';
+  h+='</div></div></div>';
+  $('#content').innerHTML=h;
+  // handlers
+  $('#content').querySelectorAll('.qnav button').forEach(b=>b.onclick=()=>{ location.hash='#/passage/'+p.id+'/'+b.dataset.q; });
+  $('#content').querySelectorAll('.choice').forEach(el=>{
+    el.onclick=(e)=>{ if(st.answered) return; const i=+el.dataset.i; let s=itemState(it.id)||{}; s.strikes=s.strikes||{};
+      if(e.target.closest('.body')){ if(window.getSelection&&String(window.getSelection()).trim()) return; s.strikes[i]=!s.strikes[i]; if(s.strikes[i]&&!multi&&(s.selected||[]).includes(i)) s.selected=[]; P.items[it.id]=s; save(); renderPassage(p,qi); return; }
+      let cur=s.selected||[]; if(multi){ cur=cur.includes(i)?cur.filter(x=>x!==i):cur.concat(i); } else cur=[i]; s.selected=cur; s.strikes[i]=false; P.items[it.id]=s; save(); renderPassage(p,qi); };
+    el.oncontextmenu=(e)=>{ e.preventDefault(); const i=+el.dataset.i; let s=itemState(it.id)||{}; s.strikes=s.strikes||{}; s.strikes[i]=!s.strikes[i]; P.items[it.id]=s; save(); renderPassage(p,qi); };
+  });
+  const parseNum=v=>{ v=String(v).trim().replace(/,/g,''); const f=v.match(/^(-?\d+(?:\.\d+)?)\s*\/\s*(-?\d+(?:\.\d+)?)$/); if(f) return +f[1]/+f[2]; const n=parseFloat(v); return isNaN(n)?null:n; };
+  const chk=$('#btn-check'); if(chk) chk.onclick=()=>{ let s=itemState(it.id)||{}; let ok;
+    if(it.numeric && !radio.length){ const raws=[...document.querySelectorAll('.num-in')].map(e=>e.value); ok=true; for(let k=0;k<it.numeric.length;k++){ const n=parseNum(raws[k]||''); if(n===null){ alert('Enter a number for each blank (e.g. 3.5, -2, or 1/2).'); return; } const v=+it.numeric[k].value; const tol=Math.max(+it.numeric[k].maxError||0, Math.abs(v)*0.005, 1e-9); if(Math.abs(n-v)>tol) ok=false; } s.numAnswer=raws; }
+    else { const cur=s.selected||[]; if(!cur.length){ alert('Pick an answer first.'); return; } const correctSet=radio.map((c,i)=>c.correct?i:-1).filter(i=>i>=0); ok=cur.length===correctSet.length&&cur.every(i=>correctSet.includes(i)); }
+    s.answered=true; s.correct=ok; s.t=Date.now(); P.items[it.id]=s; P.log=(P.log||[]).concat({p:p.id,q:qi,ok,t:Date.now()}).slice(-500); save(); renderPassage(p,qi); };
+  document.querySelectorAll('.num-in').forEach(ni=>ni.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); const b=$('#btn-check'); if(b) b.click(); } }));
+  const rt=$('#btn-retry'); if(rt) rt.onclick=()=>{ P.items[it.id]={flag:st.flag}; save(); renderPassage(p,qi); };
+  const ex=$('#btn-expl'); if(ex) ex.onclick=()=>{ let s=itemState(it.id)||{}; s.showExpl=true; P.items[it.id]=s; save(); renderPassage(p,qi); };
+  $('#btn-flag').onclick=()=>{ let s=itemState(it.id)||{}; s.flag=!s.flag; P.items[it.id]=s; save(); renderPassage(p,qi); };
+  $('#btn-prev').onclick=()=>{ location.hash='#/passage/'+p.id+'/'+(qi-1); };
+  $('#btn-next').onclick=()=>{ location.hash='#/passage/'+p.id+'/'+(qi+1); };
+  $('#notes').oninput=(e)=>{ ps.notes=e.target.value; save(); };
+  setupHighlights(p, it, ps);
+  // timer
+  if(timerId) clearInterval(timerId); const t0=Date.now(); const prevSec=ps.seconds||0;
+  timerId=setInterval(()=>{ const s=prevSec+Math.floor((Date.now()-t0)/1000); ps.seconds=s; const el=$('#timer'); if(!el){clearInterval(timerId);return;} el.textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); if(s%15===0) save(); },1000);
+  renderBlockBar(p);
+}
+
+/* ---------- highlighting ---------- */
+function textNodesOf(root){ const out=[]; const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null); let n; while((n=w.nextNode())) out.push(n); return out; }
+function offsetOf(root, node, off){ let total=0; for(const t of textNodesOf(root)){ if(t===node) return total+off; total+=t.nodeValue.length; } if(node.nodeType===1){ // element boundary: count text before child index
+    let total2=0; const nodes=textNodesOf(root); const target=node.childNodes[off]; for(const t of nodes){ if(target && (t===target || target.contains(t))) return total2; total2+=t.nodeValue.length; } return off>=node.childNodes.length?total2:0; } return -1; }
+function applyHighlights(root, ranges){
+  root.querySelectorAll('span.hl').forEach(sp=>{ const parent=sp.parentNode; while(sp.firstChild) parent.insertBefore(sp.firstChild,sp); parent.removeChild(sp); parent.normalize(); });
+  ranges.forEach((r,idx)=>{ const [start,end]=r; let pos=0; for(const t of textNodesOf(root)){ const len=t.nodeValue.length; const a=Math.max(start,pos), b=Math.min(end,pos+len); if(a<b && t.parentNode && !t.parentNode.closest('.katex-mathml')){ const range=document.createRange(); range.setStart(t,a-pos); range.setEnd(t,b-pos); const span=document.createElement('span'); span.className='hl'; span.dataset.h=idx; range.surroundContents(span); } pos+=len; if(pos>=end) break; } });
+}
+function setupHighlights(p, it, ps){
+  ps.hl=ps.hl||{};
+  const targets=[['passage',$('#passage')],[it.id,$('#content .stem')]].filter(x=>x[1]);
+  for(const [key,root] of targets){
+    const ranges=ps.hl[key]||[]; applyHighlights(root, ranges);
+    root.onmouseup=()=>{ setTimeout(()=>{ const sel=window.getSelection(); if(!sel||sel.isCollapsed||!sel.rangeCount) return; const rg=sel.getRangeAt(0); if(!root.contains(rg.startContainer)||!root.contains(rg.endContainer)) return; const a=offsetOf(root,rg.startContainer,rg.startOffset), b=offsetOf(root,rg.endContainer,rg.endOffset); if(a<0||b<0||b-a<1) return; const list=(ps.hl[key]||[]).filter(r=>r[1]<=a||r[0]>=b); // merge overlaps
+        const merged=[Math.min(a,...(ps.hl[key]||[]).filter(r=>!(r[1]<=a||r[0]>=b)).map(r=>r[0])), Math.max(b,...(ps.hl[key]||[]).filter(r=>!(r[1]<=a||r[0]>=b)).map(r=>r[1]))];
+        list.push(merged); list.sort((x,y)=>x[0]-y[0]); ps.hl[key]=list; save(); sel.removeAllRanges(); applyHighlights(root, list); },10); };
+    root.onclick=(e)=>{ const sp=e.target.closest('span.hl'); if(!sp) return; const sel=window.getSelection(); if(sel&&!sel.isCollapsed) return; const idx=+sp.dataset.h; const list=(ps.hl[key]||[]).filter((r,i)=>i!==idx); ps.hl[key]=list; save(); applyHighlights(root, list); e.stopPropagation(); };
+  }
+}
+
+document.addEventListener('keydown',e=>{ if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT') return; const m=location.hash.match(/^#\/passage\/([^/]+)(?:\/(\d+))?/); if(!m) return; const p=byId[m[1]]; const qi=+(m[2]||0); const it=p.items[qi];
+  if(e.key==='ArrowRight'&&qi<p.items.length-1) location.hash='#/passage/'+p.id+'/'+(qi+1);
+  else if(e.key==='ArrowLeft'&&qi>0) location.hash='#/passage/'+p.id+'/'+(qi-1);
+  else if(/^[a-jA-J]$/.test(e.key)){ const i=LETTERS.indexOf(e.key.toUpperCase()); const el=$('#content').querySelector('.choice[data-i="'+i+'"]'); if(el) el.click(); }
+  else if(e.key==='Enter'){ const b=$('#btn-check'); if(b) b.click(); }
+  else if(e.key==='f'||e.key==='F'){ $('#btn-flag').click(); }
+});
+
+/* ---------- header buttons ---------- */
+$('#btn-dash').onclick=()=>{ location.hash='#/dash'; };
+$('#btn-build').onclick=()=>{ location.hash='#/build'; };
+$('#btn-theme').onclick=()=>{ const t=document.documentElement.dataset.theme==='light'?'dark':'light'; document.documentElement.dataset.theme=t; localStorage.setItem('ka-mcat-theme',t); };
+document.documentElement.dataset.theme=localStorage.getItem('ka-mcat-theme')||'dark';
+$('#btn-export').onclick=()=>{ const blob=new Blob([JSON.stringify(P)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='mcat-passage-progress-'+new Date().toISOString().slice(0,10)+'.json'; a.click(); };
+$('#btn-import').onclick=()=>$('#imp').click();
+$('#imp').onchange=(e)=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ try{ const j=JSON.parse(r.result); if(!j.items) throw 0; if(confirm('Replace current progress with the imported file?')){ P=j; save(); route(); } }catch(err){ alert('Not a valid progress file.'); } }; r.readAsText(f); };
+$('#btn-reset').onclick=()=>{ if(confirm('Erase ALL progress, notes and flags?')){ P={items:{},passages:{},log:[]}; save(); route(); } };
+
+refreshHeader(); route();
+})();
+</script>
+</body>
+</html>
