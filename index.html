@@ -128,6 +128,44 @@
   .statement p{font-size:16px;font-weight:500;max-width:56ch;margin:0 auto 14px;color:var(--ink)}
   .statement p.soon{color:var(--blue);font-size:14px;font-weight:600;margin-top:24px}
 
+  /* ---------- quick AI prompts ---------- */
+  .plib{text-align:left;margin-top:56px;padding-top:40px;border-top:1px solid var(--line)}
+  .plib-head h2{font-size:clamp(22px,3.2vw,28px)}
+  .plib-head p{color:var(--muted);margin-top:6px;font-size:14.5px;max-width:64ch}
+  .plib-controls{background:var(--chip);border-radius:14px;padding:18px 20px;margin:22px 0 20px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:680px){.plib-controls{grid-template-columns:1fr}}
+  .plib-field label{display:block;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
+  .plib-field select,.plib-field input{width:100%;font:inherit;font-size:14px;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+  .plib-field select:focus,.plib-field input:focus{outline:2px solid var(--blue);outline-offset:1px}
+  .plib-search{margin-bottom:18px}
+  .plib-search input{width:100%;font:inherit;font-size:14px;padding:11px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink)}
+  .plib-nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px}
+  .plib-nav button{font:600 13px "Manrope",sans-serif;color:var(--chip-ink);background:var(--chip);border:none;border-radius:999px;padding:8px 14px;cursor:pointer}
+  .plib-nav button:hover{background:var(--line)}
+  .plib-section{margin-bottom:44px;scroll-margin-top:20px}
+  .plib-section>h3{font-size:20px;font-weight:700;padding-bottom:8px;border-bottom:2px solid var(--ink);margin-bottom:6px}
+  .plib-section>p.intro{color:var(--muted);margin:0 0 16px;font-size:14px;max-width:66ch}
+  .plib-group{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:22px 0 10px}
+  .plib-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px 14px;margin-bottom:12px}
+  .plib-card .top{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+  .plib-card h4{font-size:15.5px;font-weight:700}
+  .plib-card .use{font-size:13px;color:var(--muted);margin:2px 0 0}
+  .plib-card pre{margin:10px 0 0;background:var(--chip);border-radius:8px;padding:12px 14px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;line-height:1.55;white-space:pre-wrap;word-wrap:break-word;color:var(--ink)}
+  .plib-card.hidden{display:none}
+  .plib-ph{color:#B45309;background:#FDF1E1;border-radius:3px;padding:0 3px}
+  .plib-ph.filled{color:var(--blue);background:var(--pale2);font-weight:600}
+  .plib-copy{font:700 13px "Manrope",sans-serif;color:var(--blue);background:var(--pale2);border:none;border-radius:6px;padding:5px 12px;cursor:pointer;flex-shrink:0}
+  .plib-copy:hover{background:var(--pale3)}
+  .plib-copy.done{color:#1E7F4F;background:#E4F5EB}
+  .plib-empty{display:none;color:var(--muted);font-style:italic;margin:20px 0}
+  .plib-appendix{margin-top:8px}
+  .plib-appendix .tablewrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+  .plib-appendix table{width:100%;border-collapse:collapse;font-size:13.5px}
+  .plib-appendix th,.plib-appendix td{text-align:left;vertical-align:top;padding:10px 14px;border-bottom:1px solid var(--line)}
+  .plib-appendix th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .plib-appendix tr:last-child td{border-bottom:none}
+  .plib-appendix td:first-child{font-weight:700;white-space:nowrap;width:200px}
+
   footer{border-top:1px solid var(--line);padding:22px 0 50px;color:var(--muted);font-size:12.5px;font-weight:500;text-align:center}
 </style>
 </head>
@@ -218,6 +256,36 @@
     <div class="sechead"><h2>AI Practice</h2><p>Adaptive, AI-generated MCAT questions.</p></div>
     <div class="actionrow"><a class="btn primary" href="https://mcatqmaster.ai.studio/" target="_blank" rel="noopener">Open in new tab ↗</a></div>
     <div class="embed tall"><iframe src="https://mcatqmaster.ai.studio/" title="MCAT QMaster AI Studio"></iframe></div>
+
+    <div class="plib">
+      <div class="plib-head">
+        <h2>Quick AI Prompts</h2>
+        <p>Copy-and-paste prompts that turn any AI assistant into an MCAT question writer. Pick a topic below and it fills into every prompt that uses one — the rest of a prompt's <span class="plib-ph" style="padding:0 4px">[BRACKETS]</span> are still yours to edit after you paste.</p>
+      </div>
+
+      <div class="plib-controls">
+        <div class="plib-field">
+          <label for="plibTopicSelect">Topic</label>
+          <select id="plibTopicSelect"><option value="">— choose a topic —</option></select>
+        </div>
+        <div class="plib-field">
+          <label for="plibTopicCustom">Or type your own</label>
+          <input id="plibTopicCustom" type="text" placeholder="e.g. enzyme kinetics">
+        </div>
+      </div>
+
+      <div class="plib-search"><input id="plibSearch" type="search" placeholder="Filter prompts — try “passage”, “CARS”, “wrong answer”…"></div>
+
+      <div class="plib-nav" id="plibNav"></div>
+      <div id="plibSections"></div>
+      <p class="plib-empty" id="plibEmpty">No prompts match that filter.</p>
+
+      <div class="plib-section plib-appendix" id="plibAppendix">
+        <h3>Topic index</h3>
+        <p class="intro">Every lesson in the UWorld MCAT books, for filling the topic slot above or typing your own.</p>
+        <div class="tablewrap"><table id="plibTopicsTable"></table></div>
+      </div>
+    </div>
   </section>
 
   <section class="view" id="view-videos">
@@ -349,6 +417,297 @@
   });
   window.addEventListener("hashchange", function(){ goto(location.hash.slice(1)); });
   goto((location.hash || "#home").slice(1));
+</script>
+
+<script>
+// Quick AI Prompts — content ported from the MCAT Prompt Library.
+var PLIB_SECTIONS = [
+{id:"plib-master", title:"Master templates", intro:"Start here. These three prompts cover most of what a student needs; everything below is a specialization of them.", groups:[
+ {name:"Universal", prompts:[
+  {t:"The all-purpose question generator", u:"Any topic, any section, any count.", p:"You are an MCAT question writer trained on the AAMC style. Write [NUMBER] multiple-choice questions on [TOPIC] for the [SECTION: Bio/Biochem | Chem/Phys | Psych/Soc] section.\n\nRequirements:\n- Four answer choices (A–D), exactly one correct.\n- Match real MCAT difficulty: test application and reasoning, not recall of definitions.\n- Mix the AAMC skill categories: at least one Knowledge of Scientific Concepts question, one Scientific Reasoning question, and one Data/Research-based question.\n- Distractors must reflect real student misconceptions, not obviously wrong choices.\n- Number the questions and put the answer key with a full explanation of every choice (why the right one is right AND why each wrong one is wrong) at the very end, after the line \"=== ANSWER KEY ===\".\n\nDo not reveal answers until after that line."},
+  {t:"Passage-based set", u:"The format that makes up most of the science sections.", p:"Write an MCAT-style passage and question set on [TOPIC].\n\nPassage: 250–400 words, written like a research summary or experimental report. Include one figure or data table described in text (e.g., \"Table 1 shows...\" with the actual values) and at least one experimental manipulation with a result.\n\nThen write [5–7] questions in AAMC style:\n- 2 that require interpreting the data in the passage\n- 1–2 that test outside content knowledge about [TOPIC]\n- 1 about experimental design, controls, or a limitation of the study\n- 1 that asks what would happen if a variable were changed\n\nFour choices each (A–D). Put the answer key and explanations at the end after \"=== ANSWER KEY ===\". Do not reveal answers before that."},
+  {t:"Discrete (stand-alone) question set", u:"For rapid-fire content review.", p:"Write [NUMBER] discrete, stand-alone MCAT questions on [TOPIC] — the kind that appear between passages with no shared context. Four choices (A–D) each.\n\nSpread them across difficulty: roughly 30% foundational, 50% moderate, 20% hard. For the hard ones, combine two concepts in one question (e.g., a concept from [TOPIC] with a related concept from another chapter).\n\nAnswer key with explanations for every choice at the end after \"=== ANSWER KEY ===\". Hold the answers until then."}
+ ]},
+ {name:"Interactive modes", prompts:[
+  {t:"One question at a time (tutor mode)", u:"Best for active study — you answer, it responds, you move on.", p:"Act as an MCAT tutor. Ask me one multiple-choice question at a time on [TOPIC] (four choices, AAMC style). Wait for my answer. When I answer:\n- If correct, confirm in one sentence, then explain why the strongest distractor was wrong.\n- If incorrect, do not give the answer. Ask me one guiding question that points at my mistake, and let me try again. After a second wrong answer, explain fully.\nThen ask the next question. Make each question a little harder than the last. Keep going until I say \"stop\", then give me a summary of which concepts I struggled with."},
+  {t:"Timed block simulation", u:"Practice pacing (the real exam gives ~95 seconds per science question).", p:"Simulate a timed MCAT block. Give me [NUMBER] questions on [TOPIC or \"mixed Bio/Biochem\"] all at once, numbered, with no explanations. Tell me the target time is [NUMBER × 1.5] minutes and to reply with a list like \"1B 2A 3D...\". When I reply, grade me, report my score and percentage, and explain only the questions I missed — plus any I got right that you think I may have guessed on, based on the difficulty."},
+  {t:"Content check before questions", u:"If a student isn't sure they've learned the topic yet.", p:"Before giving me practice questions, ask me 5 short-answer recall questions on [TOPIC] to check my baseline (no multiple choice). After I answer, tell me what I have solid and what I am missing, teach me the missing pieces in under 200 words, and THEN give me 5 MCAT-style multiple-choice questions that target exactly the gaps you found."}
+ ]}
+]},
+
+{id:"plib-bio", title:"Biology & Biochemistry", intro:"Covers the UWorld Biology and Biochemistry books: molecular biology, cell biology, genetics, physiology, amino acids and proteins, enzymes, metabolism, and lab techniques.", groups:[
+ {name:"Biochemistry", prompts:[
+  {t:"Amino acids & protein structure", u:"UWorld Biochem Ch. 1–2.", p:"Write 8 MCAT questions on amino acids and protein structure. Include: one question that requires identifying an amino acid by its side chain properties (charge, polarity, pKa); one on isoelectric point or the charge of a peptide at a given pH; one on which interactions stabilize a given level of structure (primary through quaternary); one about the effect of a specific point mutation (e.g., Lys → Glu) on folding or function; and one on a post-translational modification. Four choices each. Answer key with explanations at the end after \"=== ANSWER KEY ===\"."},
+  {t:"Enzyme kinetics & inhibition", u:"UWorld Biochem Ch. 4–6. A very high-yield area.", p:"Write an MCAT passage describing an experiment on an enzyme, including a data table of initial velocities at several substrate concentrations, with and without an inhibitor. Then write 6 questions: estimate Km and Vmax from the data; identify the inhibitor type (competitive, noncompetitive, uncompetitive, mixed) from how Km and Vmax changed; predict how a Lineweaver-Burk plot would look; one on allosteric regulation or cooperativity; one on the effect of changing pH or temperature; one on feedback inhibition in a pathway. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."},
+  {t:"Metabolism pathway drill", u:"Glycolysis, gluconeogenesis, PPP, glycogen, TCA, ETC, fatty acids.", p:"Write 10 MCAT questions on [PATHWAY: glycolysis | gluconeogenesis | pentose phosphate pathway | glycogen metabolism | citric acid cycle | electron transport chain and oxidative phosphorylation | fatty acid synthesis and beta-oxidation | amino acid catabolism]. Emphasize: rate-limiting enzymes and how they are regulated (allosteric effectors, hormones, covalent modification); where the pathway occurs in the cell; net ATP/NADH/FADH2 yield; what happens under fasting vs fed states; and the effect of a specific enzyme deficiency or inhibitor (e.g., a poison that blocks a complex). Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."},
+  {t:"Metabolic integration scenario", u:"The hard cross-pathway questions.", p:"Write a short MCAT passage about a patient or an experimental organism in [STATE: prolonged fasting | high-intensity exercise | a high-carbohydrate meal | untreated diabetes | a genetic enzyme deficiency of your choice]. Then write 6 questions that require integrating multiple metabolic pathways: which pathways are up- or downregulated, which hormones are driving it, what happens to blood glucose, ketones, and lactate, and which tissue is doing what. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."},
+  {t:"Carbohydrates, lipids & nucleotides", u:"UWorld Biochem Ch. 7–9.", p:"Write 8 MCAT questions on biomolecule structure covering [CHOOSE: monosaccharide stereochemistry and anomers, glycosidic linkages in common disaccharides and polysaccharides, fatty acid saturation and membrane fluidity, phospholipids vs sphingolipids vs cholesterol, steroid hormones and signaling lipids, nucleotide structure and base pairing]. At least two questions should describe a structure in words and ask what it is or how it behaves. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."},
+  {t:"Lab techniques for proteins and DNA", u:"UWorld Biochem Ch. 14 and Biology Ch. 4.", p:"Write an MCAT passage in which researchers purify and characterize a protein using [TECHNIQUES: e.g., ion-exchange chromatography, size-exclusion chromatography, affinity chromatography, SDS-PAGE, native PAGE, isoelectric focusing, Western blot]. Include a described gel or elution result. Then write 6 questions asking students to interpret the results, predict what would happen if a condition were changed (salt, pH, denaturant), choose the right technique for a stated goal, and identify a control. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."}
+ ]},
+ {name:"Molecular & cell biology", prompts:[
+  {t:"DNA replication, repair & the central dogma", u:"UWorld Biology Ch. 1–2.", p:"Write 8 MCAT questions on [TOPIC: DNA replication | DNA repair mechanisms | transcription | translation | eukaryotic gene regulation | prokaryotic operons]. Include at least one question that gives a mutation (e.g., a specific base change in a coding sequence, with the codon table implied) and asks for its effect; one that describes an experimental result (e.g., a knockout, a drug that inhibits a specific enzyme) and asks for the interpretation; and one that distinguishes prokaryotic from eukaryotic processes. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."},
+  {t:"Biotechnology methods", u:"PCR, cloning, sequencing, CRISPR, blotting, microarrays.", p:"Write 6 MCAT questions on molecular biology techniques: [CHOOSE: PCR, restriction enzymes and cloning, Southern/Northern/Western blot, DNA sequencing, RT-qPCR, microarrays, CRISPR-Cas9, knockouts and knock-ins, reporter genes]. Each question should describe a research goal or a result and ask what technique was used, what the result means, or what control was missing. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."},
+  {t:"Cell structure, membranes & transport", u:"UWorld Biology Ch. 5.", p:"Write 8 MCAT questions on [TOPIC: organelle function | plasma membrane structure | passive vs active transport | membrane potential and ion gradients | the cell cycle and its checkpoints | mitosis | apoptosis | cell signaling and second messengers]. Include a question where a cell is placed in a solution of a given tonicity, a question about a drug that disrupts a specific organelle or transporter, and a question that requires ranking or comparing (e.g., which molecule crosses a membrane most easily). Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."},
+  {t:"Prokaryotes & viruses", u:"UWorld Biology Ch. 6.", p:"Write 8 MCAT questions on [TOPIC: bacterial structure and classification | bacterial growth and reproduction | conjugation, transformation, and transduction | antibiotic mechanisms | viral structure | lytic vs lysogenic cycles | retroviruses | prions and viroids]. Emphasize application: what happens if a drug blocks a specific step, why a given genotype spreads through a population, how an experiment could distinguish two mechanisms. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."}
+ ]},
+ {name:"Genetics & evolution", prompts:[
+  {t:"Mendelian genetics & pedigrees", u:"UWorld Biology Ch. 7.", p:"Write 6 MCAT genetics questions. Include: a dihybrid cross where students must compute a phenotype ratio; a pedigree described in text (list each generation and who is affected) where students determine the mode of inheritance and the probability of an affected child; one on linkage and recombination frequency; one on a non-Mendelian pattern (incomplete dominance, codominance, epistasis, mitochondrial inheritance, or X-linkage); one on nondisjunction. Four choices each. Show all math in the explanations. Answer key after \"=== ANSWER KEY ===\"."},
+  {t:"Hardy-Weinberg & population genetics", u:"Calculation-heavy.", p:"Write 5 MCAT questions on population genetics. Give a realistic population scenario with allele or phenotype frequencies and ask students to compute carrier frequency, expected genotype counts, or whether the population is in Hardy-Weinberg equilibrium. Include one question about which assumption was violated (mutation, migration, drift, non-random mating, selection) given a described change over generations, and one on the founder effect or bottleneck. Four choices each, with numbers that work out cleanly without a calculator. Answer key with worked math after \"=== ANSWER KEY ===\"."}
+ ]},
+ {name:"Physiology", prompts:[
+  {t:"Organ system deep dive", u:"Pick any system from UWorld Biology Ch. 9–20.", p:"Write 10 MCAT questions on the [SYSTEM: endocrine | nervous | cardiovascular | lymphatic and immune | respiratory | digestive | renal/excretory | muscular | skeletal | integumentary | reproductive] system. Cover structure-function relationships, the regulatory feedback loops involved, and what happens when something goes wrong (a hormone is oversecreted, a receptor is blocked, a structure is damaged). At least 3 questions should describe a physiological perturbation and ask students to predict the compensatory response. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."},
+  {t:"Endocrine feedback scenario", u:"Hormone axes are heavily tested.", p:"Write an MCAT passage about a patient with abnormal levels of [HORMONE or AXIS: e.g., cortisol / HPA axis, thyroid hormone, insulin and glucagon, ADH, aldosterone/RAAS, calcium and PTH/calcitonin, sex hormones/HPG axis]. Give lab values in a table (hormone levels, relevant electrolytes or glucose). Then write 6 questions asking students to locate the defect (hypothalamus, pituitary, gland, receptor), predict downstream effects, and interpret what a stimulation or suppression test would show. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."},
+  {t:"Neuron & action potential", u:"UWorld Biology Ch. 12 and Behavioural Ch. 4.", p:"Write 8 MCAT questions on neuronal physiology: resting potential and the Nernst/Goldman idea, the phases of an action potential and which channels drive each, refractory periods, myelination and conduction velocity, synaptic transmission and neurotransmitter clearance, and the effect of a specific toxin or drug (e.g., a sodium channel blocker, an acetylcholinesterase inhibitor). Include a question that describes a change in extracellular ion concentration and asks for the effect on excitability. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."},
+  {t:"Immune system", u:"UWorld Biology Ch. 20.", p:"Write 8 MCAT questions on immunology: innate vs adaptive immunity, the roles of B cells, helper and cytotoxic T cells, antibody structure and class switching, MHC I vs MHC II presentation, vaccination and memory, and hypersensitivity or autoimmunity. Include a question based on a described experiment (e.g., a mouse lacking a specific cell type is exposed to a pathogen) and a question that interprets antibody titers over time. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."},
+  {t:"Reproduction & development", u:"UWorld Biology Ch. 9–10.", p:"Write 8 MCAT questions on [TOPIC: gametogenesis | the menstrual cycle and its hormones | fertilization and early cleavage | implantation and the placenta | gastrulation and germ layers | neurulation | cell differentiation, induction, and stem cells | apoptosis and regeneration]. Include at least one question that gives a stage of development and asks what structure derives from which germ layer, and one on a described experimental manipulation (e.g., transplanting a tissue). Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."}
+ ]}
+]},
+
+{id:"plib-chemphys", title:"Chemistry & Physics", intro:"Covers the UWorld General Chemistry, Organic Chemistry, and Physics books. Calculation questions are written to be solvable without a calculator, as on the real exam.", groups:[
+ {name:"General chemistry", prompts:[
+  {t:"Atomic structure & periodic trends", u:"UWorld Chemistry Ch. 1.", p:"Write 8 MCAT questions on [TOPIC: electron configuration and quantum numbers | periodic trends (radius, ionization energy, electron affinity, electronegativity) | nuclear decay and half-life | stoichiometry and limiting reagents | percent composition and empirical formulas]. Make at least 3 of them calculation-based with numbers chosen to work out cleanly without a calculator. Include one question that gives an unfamiliar element's position on the table and asks students to predict a property. Four choices each. Answer key with worked solutions after \"=== ANSWER KEY ===\"."},
+  {t:"Bonding & intermolecular forces", u:"UWorld Chemistry Ch. 2.", p:"Write 8 MCAT questions on chemical bonding: Lewis structures and formal charge, VSEPR geometry and bond angles, hybridization, molecular polarity, and intermolecular forces. Include ranking questions (boiling point, solubility, vapor pressure) where students must identify the dominant intermolecular force for each compound, and one question that gives a molecule's properties and asks for its structure. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."},
+  {t:"Thermodynamics & thermochemistry", u:"UWorld Chemistry Ch. 3.", p:"Write 8 MCAT questions on thermodynamics: enthalpy, entropy, and Gibbs free energy; Hess's law; calorimetry; bond enthalpy calculations; the relationship between ΔG, ΔG°, K, and Q; and spontaneity at different temperatures. Give at least 3 calculation questions with clean numbers. Include one question that gives a table of ΔH and ΔS values for several reactions and asks which are spontaneous at a stated temperature. Four choices each. Answer key with worked solutions after \"=== ANSWER KEY ===\"."},
+  {t:"Kinetics", u:"UWorld Chemistry Ch. 4.", p:"Write an MCAT passage describing a kinetics experiment with a data table of initial concentrations and initial rates for several trials. Then write 6 questions: determine the rate law and order from the data; compute the rate constant; identify the rate-determining step from a proposed mechanism; predict the effect of a catalyst on the energy diagram; interpret an Arrhenius relationship; and one on half-life for a first-order process. Four choices each. Answer key with worked solutions after \"=== ANSWER KEY ===\"."},
+  {t:"Equilibrium & Le Châtelier", u:"UWorld Chemistry Ch. 5.", p:"Write 8 MCAT questions on chemical equilibrium: writing and using Kc, Kp, and Ksp expressions; comparing Q to K to predict the direction of shift; Le Châtelier's principle under changes in concentration, pressure, volume, temperature, and addition of an inert gas; the common ion effect; and solubility calculations. Numbers must work without a calculator. Four choices each. Answer key with worked solutions after \"=== ANSWER KEY ===\"."},
+  {t:"Gases & solutions", u:"UWorld Chemistry Ch. 6–7.", p:"Write 8 MCAT questions on [TOPIC: ideal gas law and its rearrangements | Dalton's law and partial pressures | kinetic molecular theory and deviations from ideality | effusion and diffusion | solubility rules and dissolution | concentration units (molarity, molality, mole fraction) | colligative properties (vapor pressure lowering, boiling point elevation, freezing point depression, osmotic pressure) | van 't Hoff factor]. At least 4 calculation questions with clean numbers. Four choices each. Answer key with worked solutions after \"=== ANSWER KEY ===\"."},
+  {t:"Acids, bases & buffers", u:"UWorld Chemistry Ch. 8. Extremely high-yield.", p:"Write 10 MCAT questions on acid-base chemistry: pH and pOH calculations (including for weak acids using the Ka approximation), conjugate pairs and relative strengths, the Henderson-Hasselbalch equation, buffer capacity and choosing a buffer, salt hydrolysis, and titration curves (identify the equivalence point, half-equivalence point, and the correct indicator). Include one question that describes a titration curve in words and asks what is being titrated. All numbers should be solvable mentally (use pKa values like 4.7 and concentrations like 0.1 M). Four choices each. Answer key with worked solutions after \"=== ANSWER KEY ===\"."},
+  {t:"Redox & electrochemistry", u:"UWorld Chemistry Ch. 9.", p:"Write 8 MCAT questions on oxidation-reduction and electrochemistry: assigning oxidation states, balancing redox reactions in acidic or basic solution, identifying the oxidizing and reducing agents, galvanic vs electrolytic cells (anode, cathode, electron flow, salt bridge), calculating standard cell potential from reduction potentials, the relationship between E°, ΔG°, and K, and concentration cells. Include a question that gives a table of reduction potentials and asks which combination gives the largest positive cell potential. Four choices each. Answer key with worked solutions after \"=== ANSWER KEY ===\"."}
+ ]},
+ {name:"Organic chemistry", prompts:[
+  {t:"Stereochemistry & isomers", u:"UWorld Organic Ch. 3. Also asked constantly in Biochem contexts.", p:"Write 8 MCAT questions on isomerism: constitutional vs stereoisomers, assigning R/S configuration from a described structure (give substituents around a stereocenter in words), enantiomers vs diastereomers vs meso compounds, optical activity and specific rotation, E/Z designation, chair conformations and axial/equatorial preferences, and how many stereoisomers a molecule with n stereocenters can have. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."},
+  {t:"Nomenclature & functional groups", u:"UWorld Organic Ch. 2, 4.", p:"Write 8 MCAT questions where I must identify a functional group or name a compound from a described structure, or identify the structure from a given IUPAC name. Cover: alkanes, alkenes, alcohols, ethers, aldehydes, ketones, carboxylic acids, esters, amides, amines, and thiols. Include two questions on degrees of unsaturation and two on resonance (which contributor is most stable and why). Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."},
+  {t:"Reaction mechanisms drill", u:"UWorld Organic Ch. 5.", p:"Write 8 MCAT questions on [MECHANISM: SN1 | SN2 | E1 | E2 | electrophilic addition | nucleophilic addition to carbonyls | nucleophilic acyl substitution]. Ask students to predict the major product, identify the rate law, choose the conditions (solvent, base strength, temperature, substrate) that favor this pathway over its competitor, and explain the stereochemical outcome. Include at least one question comparing two substrates and asking which reacts faster and why. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."},
+  {t:"Carbonyl chemistry", u:"UWorld Organic Ch. 9–11. The core of MCAT orgo.", p:"Write 10 MCAT questions on carbonyl chemistry: relative reactivity of acid chlorides, anhydrides, esters, and amides; aldol condensation and its retro reaction; enolate formation and alpha-carbon acidity; keto-enol tautomerization; hemiacetal and acetal formation (link to carbohydrate ring closure); imine and enamine formation; Fischer esterification and saponification; decarboxylation of beta-keto acids; and reduction/oxidation of carbonyls with common reagents (NaBH4, LiAlH4, PCC, Jones). Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."},
+  {t:"Acids & bases in organic chemistry", u:"pKa ranking is a classic question type.", p:"Write 6 MCAT questions where students rank the acidity or basicity of organic compounds and explain the ranking using inductive effects, resonance stabilization of the conjugate base, hybridization, aromaticity, or electronegativity. Include phenols vs alcohols vs carboxylic acids, amines of different classes, and alpha hydrogens of carbonyls. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."},
+  {t:"Separations & spectroscopy", u:"UWorld Organic Ch. 13–14.", p:"Write an MCAT passage in which a chemist synthesizes a compound and characterizes it. Describe the IR spectrum (key peaks in cm⁻¹), the ¹H NMR spectrum (chemical shifts, integration, splitting), and the mass spectrum (molecular ion, key fragments) in text. Then write 6 questions: identify the compound or a functional group from the spectra; explain a specific splitting pattern; choose the purification method (distillation, recrystallization, extraction, TLC, column chromatography) for a stated mixture; and predict which layer a compound would go to in an acid-base extraction. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."}
+ ]},
+ {name:"Physics", prompts:[
+  {t:"Kinematics, forces & energy", u:"UWorld Physics Ch. 1.", p:"Write 8 MCAT physics questions on [TOPIC: kinematics and projectile motion | Newton's laws and free-body diagrams | inclined planes and friction | circular motion | torque and equilibrium | work, energy, and power | momentum and collisions]. Use clean numbers (g = 10 m/s², angles of 30°, 45°, 60°) that can be solved without a calculator. Frame at least half the questions in a medical or biological context (a patient on a tilted bed, a hip joint as a lever, a ball thrown in rehab). Four choices each. Answer key with worked solutions after \"=== ANSWER KEY ===\"."},
+  {t:"Fluids", u:"UWorld Physics Ch. 2. Blood flow questions are common.", p:"Write 8 MCAT questions on fluids: density and specific gravity, hydrostatic pressure at depth, Pascal's principle and hydraulic systems, buoyancy and Archimedes' principle, the continuity equation, Bernoulli's equation, Poiseuille's law, and laminar vs turbulent flow. At least 4 should be set in the cardiovascular system (an artery narrows, a vessel branches, blood viscosity changes). Numbers must be mentally solvable. Four choices each. Answer key with worked solutions after \"=== ANSWER KEY ===\"."},
+  {t:"Electricity, circuits & magnetism", u:"UWorld Physics Ch. 3.", p:"Write 8 MCAT questions on [TOPIC: Coulomb's law and electric fields | electric potential and potential energy | circuits with resistors in series and parallel | Ohm's law and power dissipation | capacitors and dielectrics | RC circuit behavior qualitatively | magnetic force on a moving charge or wire]. Include a circuit described in words (list the components and connections) and ask for equivalent resistance, current through a branch, or voltage across a component. Clean numbers. Four choices each. Answer key with worked solutions after \"=== ANSWER KEY ===\"."},
+  {t:"Waves, sound & optics", u:"UWorld Physics Ch. 4.", p:"Write 8 MCAT questions on [TOPIC: simple harmonic motion and springs/pendulums | wave properties, interference, and standing waves | sound intensity and the decibel scale | the Doppler effect | ultrasound in medicine | reflection, refraction, and Snell's law | total internal reflection | thin lenses and mirrors (including the lens/mirror equation and magnification) | the eye and corrective lenses]. Include one question with a decibel calculation and one with a lens or mirror calculation, numbers chosen to be clean. Four choices each. Answer key with worked solutions after \"=== ANSWER KEY ===\"."},
+  {t:"Thermodynamics & gases (physics view)", u:"UWorld Physics Ch. 5.", p:"Write 8 MCAT questions on physics thermodynamics: the laws of thermodynamics, heat transfer (conduction, convection, radiation), specific heat and heat of phase change calculations, PV diagrams (work done in isobaric, isochoric, isothermal, adiabatic processes), thermal expansion, and the kinetic theory relationship between temperature and molecular speed. Include one question that describes a PV cycle and asks for the sign of work or heat in each leg. Four choices each. Answer key with worked solutions after \"=== ANSWER KEY ===\"."},
+  {t:"Units, estimation & math skills", u:"The mental-math layer under every physics question.", p:"Write 10 quick MCAT-style questions that test the math skills the physics section relies on: unit conversions and dimensional analysis, scientific notation arithmetic, estimating square roots and logs, trig values for 30/45/60/90 degrees, reading a graph's slope and area, proportional reasoning (if x doubles and y is proportional to 1/x², what happens to y), and rearranging equations. No calculator. Four choices each. Answer key with the fastest mental approach explained after \"=== ANSWER KEY ===\"."}
+ ]}
+]},
+
+{id:"plib-psych", title:"Psychology & Sociology", intro:"Covers the UWorld Behavioural Sciences book — 46 chapters of psychology, sociology, and research methods. Vocabulary is dense here, so several prompts target term-recognition in context.", groups:[
+ {name:"By theme", prompts:[
+  {t:"Any Psych/Soc topic", u:"Plug in any chapter or lesson from the topic index.", p:"Write 10 MCAT Psych/Soc questions on [TOPIC]. The MCAT tests these concepts by presenting a scenario and asking which term, theory, or theorist it illustrates — so every question should describe a realistic situation (a patient, a study, a community, a workplace) and ask students to identify the concept, predict a behavior, or apply a theory. Distractors should be closely related terms that are easily confused. Four choices each. Answer key with explanations that also define each distractor after \"=== ANSWER KEY ===\"."},
+  {t:"Research methods & statistics passage", u:"UWorld Behavioural Ch. 2–3 and Biology Ch. 3. Appears in every section of the exam.", p:"Write an MCAT-style passage describing a psychology or public-health study on [TOPIC of your choice]. Specify the design (e.g., randomized controlled trial, cohort, case-control, cross-sectional, longitudinal), the sample, the variables, and the results with means, standard deviations, a p-value, and/or a correlation coefficient. Then write 6 questions on: identifying the independent and dependent variables; internal vs external validity; a confounding variable or bias (selection, recall, Hawthorne, demand characteristics); what the p-value or confidence interval means; correlation vs causation; and an ethical concern (informed consent, IRB, deception). Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."},
+  {t:"Learning & conditioning", u:"UWorld Behavioural Ch. 16–18.", p:"Write 8 MCAT questions on learning: classical conditioning (identify the UCS, UCR, CS, CR in a scenario; acquisition, extinction, spontaneous recovery, generalization, discrimination), operant conditioning (positive/negative reinforcement vs punishment; fixed/variable ratio/interval schedules and their response patterns; shaping), observational learning, and biological constraints on learning. Each question gives a scenario and asks which process is at work or what will happen next. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."},
+  {t:"Memory, cognition & language", u:"UWorld Behavioural Ch. 19–22.", p:"Write 8 MCAT questions on [TOPIC: encoding, storage, and retrieval | types of memory (sensory, working, long-term; explicit vs implicit; semantic vs episodic vs procedural) | forgetting and memory errors | neurobiology of memory | Piaget's stages of cognitive development | theories of intelligence | problem-solving heuristics and biases | theories of language development | brain regions involved in language]. Use scenario-based questions with confusable distractors. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."},
+  {t:"Sensation & perception", u:"UWorld Behavioural Ch. 8–12.", p:"Write 8 MCAT questions on sensation and perception: absolute and difference thresholds and Weber's law, signal detection theory, sensory adaptation, the structure and processing pathway of the [SENSE: eye/vision | ear/hearing | somatosensation | taste and smell | vestibular and kinesthetic], Gestalt principles, depth cues, and bottom-up vs top-down processing. Include at least one question that describes a lesion or damage and asks for the resulting deficit. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."},
+  {t:"Motivation, emotion, stress & personality", u:"UWorld Behavioural Ch. 23–27.", p:"Write 8 MCAT questions on [TOPIC: theories of motivation (drive reduction, incentive, arousal, Maslow, self-determination) | theories of emotion (James-Lange, Cannon-Bard, Schachter-Singer, Lazarus) | the physiology of stress and the general adaptation syndrome | coping strategies | psychoanalytic, humanistic, trait, behaviorist, and social-cognitive theories of personality | defense mechanisms]. Each question presents a person's behavior or a study result and asks which theory best explains it. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."},
+  {t:"Psychological disorders & treatment", u:"UWorld Behavioural Ch. 29–31.", p:"Write 8 MCAT questions on psychological and neurological disorders as the MCAT frames them: recognizing the category of disorder from a described set of symptoms (mood, anxiety, psychotic, personality, dissociative, somatic, neurodevelopmental, neurocognitive), the biological correlates the MCAT expects (neurotransmitter systems, brain regions), and the major treatment approaches (cognitive-behavioral, psychodynamic, humanistic, biomedical). Keep descriptions clinical and respectful; the goal is category recognition, not diagnosis. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."},
+  {t:"Self, identity & social interaction", u:"UWorld Behavioural Ch. 34–42.", p:"Write 8 MCAT questions on [TOPIC: socialization and agents of socialization | identity formation (Erikson, Kohlberg, Vygotsky, looking-glass self) | impression management and dramaturgy | status and roles, role conflict and role strain | groups, networks, and organizations | attraction, aggression, and attachment styles | altruism | attribution theory and the fundamental attribution error | prejudice, stereotypes, discrimination, and stereotype threat | conformity, obedience, groupthink, social loafing, bystander effect | social norms and deviance theories]. Scenario-based, with closely related distractors. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."},
+  {t:"Social structure & inequality", u:"UWorld Behavioural Ch. 32–33, 43–46.", p:"Write 8 MCAT sociology questions on [TOPIC: functionalism, conflict theory, symbolic interactionism, and other sociological perspectives | social institutions (education, family, religion, government, economy, medicine) | demographics and demographic transition | social stratification, class, and social mobility | poverty and spatial inequality | health and healthcare disparities | urbanization, globalization, and social movements]. Frame at least 4 questions around a health or healthcare scenario, since the MCAT emphasizes the sociology of medicine. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."}
+ ]},
+ {name:"Vocabulary-focused", prompts:[
+  {t:"Term discrimination drill", u:"For the pairs students always mix up.", p:"The MCAT Psych/Soc section punishes confusing similar terms. Write 10 questions on [TOPIC], each built around a pair or trio of easily confused concepts (e.g., negative reinforcement vs punishment; incidence vs prevalence; assimilation vs accommodation; role strain vs role conflict; primary vs secondary groups). Describe a scenario and ask which term applies. After the answer key, add a table of every confusable pair used with a one-line distinction for each. Four choices each. Answer key after \"=== ANSWER KEY ===\"."},
+  {t:"Theorist matching", u:"Freud, Erikson, Piaget, Kohlberg, Vygotsky, Bandura, and friends.", p:"Write 10 MCAT questions on the major theorists in psychology and sociology: [CHOOSE from Freud, Erikson, Piaget, Kohlberg, Vygotsky, Bandura, Skinner, Pavlov, Maslow, Rogers, Durkheim, Marx, Weber, Mead, Cooley, Goffman]. Each question describes a person at a particular stage or a behavior, and asks which theorist's framework explains it or which stage they are in. Distractors should be adjacent stages or theorists with similar ideas. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."}
+ ]}
+]},
+
+{id:"plib-cars", title:"CARS", intro:"Critical Analysis and Reasoning Skills. No content knowledge is tested — only reading. These prompts generate original passages and questions built around the three AAMC skill categories used in the UWorld CARS book: Foundations of Comprehension, Reasoning Within the Text, and Reasoning Beyond the Text.", groups:[
+ {name:"Passage sets", prompts:[
+  {t:"Full CARS passage & questions", u:"The standard drill.", p:"Write an original MCAT CARS passage of 500–600 words in the [DISCIPLINE: philosophy | ethics | art history | literary criticism | history | political science | anthropology | economics | sociology | religion | music theory | architecture] discipline, written in the dense, argumentative style of real CARS passages: an author with a clear but unstated thesis, at least one counterargument they address, and some shifts in tone. Do not copy or paraphrase any existing published text.\n\nThen write 6 questions in AAMC style, distributed across:\n- 2 Foundations of Comprehension (main idea, meaning of a term in context, what the author directly claims)\n- 2 Reasoning Within the Text (function of a paragraph, the author's attitude toward something, what evidence supports a claim)\n- 2 Reasoning Beyond the Text (apply the author's view to a new situation, how new information would affect the argument, an analogy to the author's reasoning)\n\nFour choices each, with wrong answers that are tempting because they are too extreme, out of scope, or partially true. Answer key with explanations that quote the relevant passage lines after \"=== ANSWER KEY ===\"."},
+  {t:"Two-passage pacing set", u:"Practice moving between passages under time.", p:"Write two original CARS passages (each 500–600 words) in different disciplines with contrasting styles — one abstract and philosophical, one concrete and historical. Give each 5–6 questions in AAMC style across all three skill categories. Tell me the target time is 20 minutes for both. Give no explanations until I reply with my answers. Then grade me and explain only what I missed."}
+ ]},
+ {name:"Skill-targeted", prompts:[
+  {t:"Drill one CARS skill", u:"Maps to the UWorld subskill lessons (1a–3g).", p:"Write an original 500-word CARS passage on any humanities topic. Then write 7 questions that ALL target the skill [SKILL: identifying the main idea or purpose | meaning of a term in context | identifying direct and implicit claims | recognizing the author's perspective or tone | logical relationships between ideas | the function of a specific claim or paragraph | evaluating how well evidence supports a claim | drawing additional inferences | applying the author's ideas to a new scenario | how new evidence would strengthen or weaken the argument | identifying analogies to the author's reasoning]. Vary how the questions are phrased so I learn to recognize this skill in disguise. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."},
+  {t:"Distractor autopsy", u:"Learn why wrong answers are tempting.", p:"Write an original 400-word CARS passage and 4 questions. For the answer key, do not just explain the right answer: for every wrong choice, label the trap type — \"too extreme,\" \"out of scope,\" \"opposite,\" \"right idea wrong question,\" \"half right,\" or \"distortion of a real passage detail\" — and explain why a rushed reader would pick it. Put the key after \"=== ANSWER KEY ===\"."},
+  {t:"Passage mapping practice", u:"Trains the reading, not just the answering.", p:"Write an original 550-word CARS passage with 5 paragraphs. Before showing any questions, ask me to write a one-sentence summary of each paragraph and a one-sentence statement of the author's main argument. After I reply, compare my map with yours, point out anything I misread, and only then give me 5 questions on the passage. Four choices each. Grade me after I answer."},
+  {t:"Tone and attitude focus", u:"For students who miss author's-perspective questions.", p:"Write an original CARS passage in which the author's attitude is subtle — they are, for example, cautiously sympathetic to a view they ultimately reject, or ironic toward a position they pretend to defend. Then write 5 questions that all hinge on correctly reading the author's tone, attitude, or degree of certainty. Four choices each. In the answer key, quote the exact words in the passage that signal the attitude. Key after \"=== ANSWER KEY ===\"."}
+ ]}
+]},
+
+{id:"plib-formats", title:"Question formats & skills", intro:"Section-independent prompts that target a specific question type or AAMC skill category. Combine any of these with a topic from the index.", groups:[
+ {name:"AAMC skill categories", prompts:[
+  {t:"Skill 3: Experimental design", u:"Reasoning about the design and execution of research.", p:"Write 6 MCAT questions on [TOPIC] that focus entirely on experimental design. For each, describe an experiment in 3–4 sentences and ask about: the appropriate control group, a flaw or confounder, what conclusion the data actually support, which additional experiment would test the hypothesis, or why a result might be an artifact. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."},
+  {t:"Skill 4: Data & figure interpretation", u:"Graphs, tables, and statistical reasoning.", p:"Write 6 MCAT questions on [TOPIC] built around data. For each question, describe a figure or table precisely in text (axes, units, each data series, the actual values or the trend, error bars if relevant). Ask students to read a value, compare conditions, identify a trend, judge whether a difference is likely significant, or draw the correct conclusion. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."},
+  {t:"Calculation set", u:"For any quantitative topic.", p:"Write 8 MCAT calculation questions on [TOPIC]. All numbers must be chosen so the arithmetic is doable mentally in under 90 seconds (powers of 10, simple fractions, g = 10 m/s², log 2 ≈ 0.3). Include one question where the trap is a unit conversion and one where the trap is using the wrong equation. Four choices each, with the wrong choices being the results of predictable errors. Answer key showing the fastest solution path after \"=== ANSWER KEY ===\"."},
+  {t:"Two-concept integration questions", u:"The hardest MCAT questions combine chapters.", p:"Write 6 hard MCAT questions that each require combining [TOPIC A] with [TOPIC B] to answer (for example, acid-base chemistry with amino acid charge, or fluid dynamics with cardiovascular physiology). No question should be answerable with knowledge of only one topic. Four choices each. Answer key that explicitly shows which concept from each topic was needed after \"=== ANSWER KEY ===\"."},
+  {t:"“All of the following EXCEPT” and Roman-numeral questions", u:"Formats that trip people up.", p:"Write 8 MCAT questions on [TOPIC] using the tricky formats: 4 in the form \"All of the following are true EXCEPT\" and 4 in the Roman-numeral form (\"Which of the following statements is/are correct? I. ... II. ... III. ...\" with choices like \"I only,\" \"I and II only,\" etc.). Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."}
+ ]},
+ {name:"Study-cycle prompts", prompts:[
+  {t:"Mixed full-length section block", u:"Simulates the interleaving of the real exam.", p:"Build a mini MCAT [SECTION: Bio/Biochem | Chem/Phys | Psych/Soc] section: 2 passages (each with 5 questions) and 5 discrete questions, for 15 questions total, drawn from at least 6 different chapters mixed in random order. Match the real section's weighting (for Bio/Biochem: ~65% biology, ~25% biochemistry, ~10% chemistry; for Chem/Phys: ~30% general chemistry, ~25% biochemistry, ~25% physics, ~15% organic chemistry, ~5% biology; for Psych/Soc: ~65% psychology, ~30% sociology, ~5% biology). Give a 25-minute target. No explanations until I submit answers."},
+  {t:"Weak-area targeting", u:"Feed it your past misses.", p:"Here are topics I have been getting wrong on practice tests: [LIST YOUR WEAK TOPICS]. Write 12 MCAT questions concentrated on these topics, weighted toward whichever ones seem most fundamental (the ones that, if misunderstood, would cause the others). Vary question format across discrete, data-based, and scenario-based. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\". After the key, tell me which single concept I should review first and why."},
+  {t:"Spaced-repetition set", u:"Re-test what you learned last week.", p:"I studied these topics [NUMBER] days ago: [LIST TOPICS]. Write a 10-question retrieval-practice set that tests them without warm-up — no easy questions first. Include at least 3 questions that approach a topic from a different angle than a textbook would (a clinical scenario, a reversed question, a \"which is NOT\" format), so I can't rely on recognition. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\"."},
+  {t:"Convert notes into questions", u:"Paste your own notes or a textbook section.", p:"Below are my study notes. Write [NUMBER] MCAT-style multiple-choice questions that test only what is in these notes, at MCAT difficulty (application, not recall). Then add 3 questions on what the notes are MISSING that the MCAT would expect me to know about this topic, and tell me what those gaps are. Four choices each. Answer key with explanations after \"=== ANSWER KEY ===\".\n\nNOTES:\n[PASTE NOTES HERE]"},
+  {t:"Flashcard generator", u:"For Anki or any spaced-repetition app.", p:"Create 30 flashcards on [TOPIC] for MCAT review. Format each as \"Q: ... | A: ...\" on one line so I can import them. Make the questions specific and testable (not \"describe X\" but \"what enzyme catalyzes X and what regulates it\"). Include 5 cloze-style cards (\"The rate-limiting enzyme of glycolysis is ___\") and 5 cards that ask for a comparison between two easily confused things. No card should have an answer longer than 20 words."}
+ ]}
+]},
+
+{id:"plib-review", title:"Review & feedback", intro:"Use these after you've answered. This is where most of the learning happens.", groups:[
+ {name:"After a practice set", prompts:[
+  {t:"Explain my mistake", u:"Paste the question and your wrong answer.", p:"Here is an MCAT question I got wrong, my answer, and the correct answer. Do not just explain the correct answer. First tell me what I must have been thinking to pick my answer — what misconception or misreading leads there. Then explain the concept I am missing in under 150 words. Then write 2 new questions that test the same concept differently so I can confirm I understand it now.\n\nQUESTION: [PASTE QUESTION AND CHOICES]\nMY ANSWER: [LETTER]\nCORRECT ANSWER: [LETTER]"},
+  {t:"Error log analysis", u:"Find patterns across many misses.", p:"Below is a list of questions I have missed recently, with the topic and the reason I think I missed each one. Analyze the list for patterns: Am I missing content knowledge, misreading questions, making calculation errors, or falling for a specific distractor type? Rank the patterns by how many points they are costing me. Then give me a specific 3-day plan to fix the top pattern, and write 5 practice questions that target it.\n\nMISSED QUESTIONS:\n[PASTE LIST]"},
+  {t:"Grade my reasoning, not just my answer", u:"Especially for CARS and experimental design.", p:"I'll give you an MCAT question and then explain in my own words how I reasoned through it and which answer I chose. Grade my reasoning process step by step: where was it sound, where did it go wrong, and what should I have done instead. Be direct. Then tell me whether my process would have worked on a similar but harder question, and if not, why.\n\nQUESTION: [PASTE]\nMY REASONING: [WRITE OUT YOUR THINKING]\nMY ANSWER: [LETTER]"},
+  {t:"Teach me back", u:"Uses the Feynman technique.", p:"I am going to explain [TOPIC] to you as if you were a first-year undergraduate. Listen, then: (1) point out anything I said that was wrong or imprecise, (2) point out anything important I left out that the MCAT tests, (3) ask me 3 follow-up questions an MCAT question writer would ask about this topic. Wait for my explanation before responding."}
+ ]},
+ {name:"Deepening", prompts:[
+  {t:"Why are the distractors wrong?", u:"Turns one question into four lessons.", p:"Here is an MCAT question. For each of the four answer choices, explain the exact scenario in which that choice WOULD be correct — what would the question have to say instead? This helps me learn the distractors as concepts, not just as wrong answers.\n\nQUESTION: [PASTE]"},
+  {t:"Make it harder", u:"Push a concept you already understand.", p:"I understand [TOPIC] at a basic level. Write 5 questions that progressively raise the difficulty: question 1 is a standard MCAT question; question 5 should be as hard as the hardest real MCAT questions — requiring two or three inferential steps, a data interpretation, and a connection to another topic. After each, tell me what made it harder than the previous one. Four choices each. Answer key after \"=== ANSWER KEY ===\"."},
+  {t:"Question the question", u:"Builds skepticism, which the MCAT rewards.", p:"Write 5 MCAT questions on [TOPIC], but make 2 of them subtly flawed — either an ambiguous stem, two defensible answers, or a factual error in a premise. Don't tell me which. After I answer, I will tell you which ones I think are flawed and why. Then reveal which ones actually were, and explain. This trains me to read critically instead of trusting the question."}
+ ]}
+]}
+];
+
+var PLIB_TOPICS = [
+["Biology","DNA Structure, Synthesis, and Repair","Nucleic Acids · DNA Replication · DNA Repair · Eukaryotic Chromosome Organization"],
+["Biology","Gene Expression","The Central Dogma · Transcription · Translation · Regulation of Gene Expression"],
+["Biology","Research & Biotechnology","Experimental Design · Statistics · DNA Technology · Analyzing Gene Expression · Determining Gene Function · Applications of Biotechnology"],
+["Biology","Eukaryotic Cells","Cells · Plasma Membrane · Eukaryotic Organelles · Cell Growth and Division · Eukaryotic Tissues"],
+["Biology","Prokaryotes & Viruses","Prokaryotic Cells · Growth and Reproduction · Prokaryotic Genetics · Viruses · Viral Life Cycles · Sub-Viral Particles"],
+["Biology","Genetics & Evolution","Meiosis · Mendelian Concepts · Chromosomes and Inheritance · Factors Affecting Allele Frequency · Evolution of Species"],
+["Biology","Reproduction & Development","Biological Sex and Reproduction · Male and Female Reproductive Systems · Pre- and Post-Implantation Development · Cellular Mechanisms of Development · Gestation · Regeneration and Senescence"],
+["Biology","Organ Systems","Endocrinology and Hormones · Nervous System · Circulatory and Lymphatic · Respiratory · Digestive · Excretory · Muscular · Skeletal · Skin · Immune"],
+["Biochemistry","Amino Acids & Proteins","Amino Acid Structure and Properties · Acid-Base Chemistry of Amino Acids · Peptides · Levels of Protein Structure · Protein Modifications"],
+["Biochemistry","Protein Function","Protein-Ligand Interactions · Receptor Proteins · Membrane Transport Proteins"],
+["Biochemistry","Enzymes","Enzymes as Catalysts · Enzyme Classification · Catalytic Mechanisms · Optimization of Enzyme Activity · Michaelis-Menten Equation and Parameters · Graphical Representations · Enzyme Inhibitors · Feedback Regulation · Covalent Modification"],
+["Biochemistry","Biomolecules","Monosaccharides · Complex Carbohydrates · Nucleotides · Nucleic Acids · Energy Storage Lipids · Structural Lipids · Signaling Lipids"],
+["Biochemistry","Metabolism","Catabolism and Anabolism · Glycolysis and Fermentation · Gluconeogenesis · Pentose Phosphate Pathway · Glycogen Metabolism · Citric Acid Cycle · Electron Transport Chain · Oxidative Phosphorylation · Fatty Acid Metabolism · Protein Catabolism"],
+["Biochemistry","Laboratory Techniques","Gel Electrophoresis · Blotting Techniques · Chromatography · Additional Techniques"],
+["General Chemistry","Atoms & the Periodic Table","Atomic Structure · Nuclear Decay · Electronic Structure · Periodic Table Organization · Atomic Properties and Trends · Measurements and Chemical Composition"],
+["General Chemistry","Bonding & Reactions","Chemical Bonding · Bond and Molecular Polarity · Intermolecular Forces · Chemical Reactions · Stoichiometry"],
+["General Chemistry","Thermodynamics","Zeroth, First, and Second Laws · Heat Transfer in Physical and Chemical Changes · Calorimetry · Gibbs Free Energy"],
+["General Chemistry","Kinetics & Equilibrium","Reaction Mechanisms · Reaction Rates · Catalysis · Equilibrium in Reversible Reactions · Law of Mass Action · Reaction Quotient · Le Châtelier's Principle"],
+["General Chemistry","Gases & Solutions","Pressure, Volume, and Temperature · Ideal Gas Model · Solutes in Solution · Solubility"],
+["General Chemistry","Acids & Bases","Definitions · Aqueous Solutions · Strengths of Acids and Bases · Buffers · Hydrolysis of Salts · Acid-Base Titrations"],
+["General Chemistry","Electrochemistry","Redox Reactions · Redox Titrations · Electrochemical Cells · Types and Applications of Cells"],
+["Organic Chemistry","Structure & Bonding","Covalent Bonds · Hybridization · Bond Polarity · Molecular Orbital Theory · Molecular Shape and Polarity · Intermolecular Forces · Drawing Molecules · Degrees of Unsaturation · Resonance · Functional Groups"],
+["Organic Chemistry","Isomers & Nomenclature","Constitutional, Conformational, and Stereoisomers · IUPAC Nomenclature (hydrocarbons, oxygen-, nitrogen-, sulfur-containing, multifunctional) · Common Nomenclature"],
+["Organic Chemistry","Reactions","Acid-Base Reactions · Reactive Intermediates · Nucleophiles, Electrophiles, Leaving Groups · Substitution · Addition · Elimination · Oxidation-Reduction"],
+["Organic Chemistry","Functional Group Chemistry","Hydrocarbons (alkanes, alkenes, alkynes, aromatics) · Alkyl Halides · Ethers · Thiols · Alcohols · Aldehydes and Ketones (incl. alpha reactions) · Carboxylic Acids · Carboxylic Acid Derivatives · Amines and Amides"],
+["Organic Chemistry","Lab & Spectroscopy","Solubility-Based Techniques · Distillation · Chromatography · Polarimetry · Mass Spectrometry · UV-Vis · Infrared · NMR"],
+["Physics","Motion, Force & Energy","Foundations · Translational Motion · Forces · Equilibrium · Work and Energy"],
+["Physics","Fluids","Hydrostatics · Fluids in Motion"],
+["Physics","Electricity & Magnetism","Electric Charge and Force · Flowing Charge (Circuits) · Capacitance · Magnetism"],
+["Physics","Waves, Sound & Light","Periodic Motion and Waves · Sound · Light · Optical Instruments"],
+["Physics","Thermodynamics","Thermodynamic Systems and Laws · Heat · Phases of Matter · Kinetic Theory of Gases"],
+["Psychology","Foundations & Research","Psychoanalytic, Behaviorist, and Humanistic Perspectives · Scientific Method · Types of Studies · Results and Conclusions · Ethics · Descriptive and Inferential Statistics"],
+["Psychology","Biological Bases","Nervous System · Neurons · The Brain · Spinal Cord · Endocrine System · Behavioral Genetics · Physiological Development · Neuroimaging and Other Methods"],
+["Psychology","Sensation & Perception","Principles of Sensation · Sensory Receptors · Perception · Vision · Hearing · Somatosensation · Taste · Smell · Kinesthetic and Vestibular Senses"],
+["Psychology","Consciousness & Attention","States of Consciousness · Sleep · Consciousness-Altering Substances · Problematic Substance Use · Selective and Divided Attention"],
+["Psychology","Learning & Memory","Habituation · Classical and Operant Conditioning · Cognitive and Biological Underpinnings · Observational Learning · Encoding, Storage, Retrieval · Forgetting · Biology of Memory"],
+["Psychology","Cognition & Language","Cognition Across the Lifespan · Theories of Intelligence · Problem-Solving and Its Barriers · Language Development · Language and Cognition · Biology of Language"],
+["Psychology","Motivation, Emotion & Personality","Influences and Theories of Motivation · Components and Theories of Emotion · Attitudes and Behavior · Psychoanalytic, Humanistic, and Trait Theories of Personality · Stress · Attitude and Behavior Change"],
+["Psychology","Disorders & Treatment","Types of Psychological Disorders · Neurological Disorders · Biological Underpinnings · Treatment Approaches"],
+["Sociology","Foundations & Culture","Major Approaches and Theories · Empiricism and Types of Studies · Components and Types of Culture · Cultural Change · Socialization"],
+["Sociology","Self & Interaction","Types of Identities · Identity Formation · Presentation of Self · Status · Roles · Groups · Networks · Organizations · Attraction · Aggression · Attachment · Altruism · Attribution"],
+["Sociology","Group Processes","Prejudice · Stereotypes · Discrimination · Group Processes · Social Loafing and the Bystander Effect · Conformity and Obedience · Group Decision-Making · Social Norms · Deviance"],
+["Sociology","Institutions & Inequality","Education · Family · Religion · Government and Economy · Medicine · Age · Gender · Sexual Orientation · Race and Ethnicity · Immigration Status · Stratification · Mobility · Spatial Inequality · Poverty · Health Disparities · Urbanization · Globalization · Social Movements · Demographic Change"],
+["Psychology/Sociology","Research Methods & Statistics","Study Designs · Variables and Validity · Bias and Confounding · Descriptive and Inferential Statistics · Data Interpretation"],
+["CARS","Skills","Foundations of Comprehension (1a–1f: main idea, meaning of term, direct and implicit claims, perspectives, implications) · Reasoning Within the Text (2a–2f: logical relationships, function of claims, evidence, inferences) · Reasoning Beyond the Text (3a–3g: applications, new evidence, analogies)"]
+];
+
+(function(){
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+  function highlight(s){
+    return esc(s).replace(/\[([^\]\n]{1,160})\]/g, function(m, inner){
+      if (inner === "TOPIC") return '<span class="plib-ph plib-topic-slot">[TOPIC]</span>';
+      return '<span class="plib-ph">[' + inner + ']</span>';
+    });
+  }
+  function currentTopic(){
+    var custom = document.getElementById("plibTopicCustom").value.trim();
+    if (custom) return custom;
+    return document.getElementById("plibTopicSelect").value;
+  }
+  function applyTopic(){
+    var t = currentTopic();
+    document.querySelectorAll(".plib-topic-slot").forEach(function(el){
+      if (t){ el.textContent = t; el.classList.add("filled"); }
+      else { el.textContent = "[TOPIC]"; el.classList.remove("filled"); }
+    });
+  }
+
+  var navEl = document.getElementById("plibNav");
+  var sectionsEl = document.getElementById("plibSections");
+  var total = 0;
+  PLIB_SECTIONS.forEach(function(sec){
+    var s = document.createElement("div");
+    s.className = "plib-section"; s.id = sec.id;
+    var html = "<h3>" + esc(sec.title) + "</h3><p class=\"intro\">" + esc(sec.intro) + "</p>";
+    sec.groups.forEach(function(g){
+      html += '<div class="plib-group">' + esc(g.name) + "</div>";
+      g.prompts.forEach(function(p){
+        total++;
+        var dataText = (p.t + " " + p.u + " " + p.p).toLowerCase().replace(/"/g, "&quot;");
+        html += '<article class="plib-card" data-text="' + dataText + '">' +
+          '<div class="top"><h4>' + esc(p.t) + '</h4><button class="plib-copy" type="button">Copy</button></div>' +
+          '<p class="use">' + esc(p.u) + '</p>' +
+          '<pre>' + highlight(p.p) + '</pre></article>';
+      });
+    });
+    s.innerHTML = html;
+    sectionsEl.appendChild(s);
+    var navBtn = document.createElement("button");
+    navBtn.type = "button"; navBtn.textContent = sec.title;
+    navBtn.addEventListener("click", function(){ s.scrollIntoView({behavior:"smooth", block:"start"}); });
+    navEl.appendChild(navBtn);
+  });
+  var apxBtn = document.createElement("button");
+  apxBtn.type = "button"; apxBtn.textContent = "Topic index";
+  apxBtn.addEventListener("click", function(){ document.getElementById("plibAppendix").scrollIntoView({behavior:"smooth", block:"start"}); });
+  navEl.appendChild(apxBtn);
+
+  var sel = document.getElementById("plibTopicSelect");
+  var lastArea = null;
+  PLIB_TOPICS.forEach(function(row){
+    if (row[0] !== lastArea){ lastArea = row[0]; var og = document.createElement("optgroup"); og.label = row[0]; og.dataset.area = row[0]; sel.appendChild(og); }
+    var opt = document.createElement("option"); opt.value = row[1]; opt.textContent = row[1];
+    sel.lastChild.appendChild(opt);
+  });
+
+  var tb = document.getElementById("plibTopicsTable");
+  tb.innerHTML = "<thead><tr><th>Book / area</th><th>Lessons</th></tr></thead><tbody>" +
+    PLIB_TOPICS.map(function(r){ return "<tr><td>" + esc(r[0]) + "<br><span style=\"font-weight:400;color:var(--muted)\">" + esc(r[1]) + "</span></td><td>" + esc(r[2]) + "</td></tr>"; }).join("") +
+    "</tbody>";
+
+  applyTopic();
+  sel.addEventListener("change", applyTopic);
+  document.getElementById("plibTopicCustom").addEventListener("input", applyTopic);
+
+  var searchEl = document.getElementById("plibSearch");
+  var emptyEl = document.getElementById("plibEmpty");
+  searchEl.addEventListener("input", function(){
+    var v = searchEl.value.trim().toLowerCase();
+    var shown = 0;
+    document.querySelectorAll(".plib-card").forEach(function(c){
+      var m = !v || c.dataset.text.indexOf(v) !== -1;
+      c.classList.toggle("hidden", !m);
+      if (m) shown++;
+    });
+    document.querySelectorAll("#plibSections .plib-section").forEach(function(s){
+      s.style.display = s.querySelector(".plib-card:not(.hidden)") ? "" : "none";
+    });
+    document.querySelectorAll(".plib-group").forEach(function(g){
+      var el = g.nextElementSibling, any = false;
+      while (el && el.classList.contains("plib-card")){ if (!el.classList.contains("hidden")) any = true; el = el.nextElementSibling; }
+      g.style.display = any ? "" : "none";
+    });
+    emptyEl.style.display = shown ? "none" : "block";
+  });
+
+  document.addEventListener("click", function(e){
+    var b = e.target.closest(".plib-copy"); if (!b) return;
+    var text = b.closest(".plib-card").querySelector("pre").innerText;
+    var done = function(){ b.textContent = "Copied"; b.classList.add("done"); setTimeout(function(){ b.textContent = "Copy"; b.classList.remove("done"); }, 1600); };
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done).catch(function(){ fallbackCopy(text, done); });
+    } else fallbackCopy(text, done);
+  });
+  function fallbackCopy(text, done){
+    var ta = document.createElement("textarea");
+    ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); done(); } catch(e){}
+    document.body.removeChild(ta);
+  }
+})();
 </script>
 </body>
 </html>
