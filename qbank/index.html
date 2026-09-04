@@ -32,7 +32,7 @@
 :root{
   --bg:#1e1f22; --bg2:#26272b; --bg3:#2f3035; --line:#3a3b40; --text:#e6e6e6; --muted:#9a9ca3;
   --accent:#2F6FED; --ok:#3fbf7f; --bad:#e35d5d; --warn:#e0b23f; --flag:#ff9f43;
-  --pass-bg:#232428; --serif:Georgia,"Times New Roman",serif; --sans:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+  --pass-bg:#232428; --serif:Georgia,"Times New Roman",serif; --sans:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
 }
 html[data-theme="light"]{
   --bg:#f7f8fa; --bg2:#ffffff; --bg3:#f1f3f7; --line:#e5e8ee; --text:#1d1f24; --muted:#767b87; --pass-bg:#ffffff;
@@ -376,7 +376,9 @@ function renderTree(){
   }
   $('#tree').innerHTML=h;
   $('#tree').querySelectorAll('.tr[data-k]').forEach(el=>el.onclick=()=>toggle(el.dataset.k));
-  $('#tree').querySelectorAll('.tr[data-p]').forEach(el=>el.onclick=()=>{ location.hash='#/passage/'+el.dataset.p; });
+  // requestFS() runs inside the click itself: browsers only grant fullscreen while the
+  // user gesture is still live, which the later hashchange render can't rely on.
+  $('#tree').querySelectorAll('.tr[data-p]').forEach(el=>el.onclick=()=>{ requestFS(); location.hash='#/passage/'+el.dataset.p; });
   const act=$('#tree .tr.active'); if(act) act.scrollIntoView({block:'nearest'});
 }
 $('#search').addEventListener('input',renderTree); $('#hide-done').addEventListener('change',renderTree); $('#tree-mode').addEventListener('change',renderTree); $('#content-mode').addEventListener('change',renderTree); $('#source-mode').addEventListener('change',renderTree);
@@ -476,22 +478,34 @@ function renderBlockBar(p){
   }
   html+='<button class="small" id="btn-exit-block">Exit block</button></div>';
   pv.insertAdjacentHTML('afterbegin', html);
-  const nextP=document.getElementById('btn-block-next-passage'); if(nextP) nextP.onclick=()=>{ location.hash='#/passage/'+chunkIds[idx+1]+'/0'; };
-  const nextB=document.getElementById('btn-next-block'); if(nextB) nextB.onclick=()=>{ if(nextB.disabled) return; currentBlock.chunkIndex++; const nc=currentBlock.chunks[currentBlock.chunkIndex]; location.hash='#/passage/'+nc[0]+'/0'; };
+  const nextP=document.getElementById('btn-block-next-passage'); if(nextP) nextP.onclick=()=>{ requestFS(); location.hash='#/passage/'+chunkIds[idx+1]+'/0'; };
+  const nextB=document.getElementById('btn-next-block'); if(nextB) nextB.onclick=()=>{ if(nextB.disabled) return; requestFS(); currentBlock.chunkIndex++; const nc=currentBlock.chunks[currentBlock.chunkIndex]; location.hash='#/passage/'+nc[0]+'/0'; };
   const exitB=document.getElementById('btn-exit-block'); exitB.onclick=()=>{ currentBlock=null; const bar=document.getElementById('block-bar'); if(bar) bar.remove(); };
 }
 
 /* ---------- fullscreen (immersive test-taking mode) ---------- */
-// Manual, one-click control: a fullscreen request without a direct user gesture in the
-// same call stack is blocked by browsers, so this is triggered only by the button click
-// below (never called automatically on passage load). Works whether this document is
-// standalone or iframed into the hub (the hub's iframe has allow="fullscreen"/allowfullscreen,
-// which delegates the permission needed for requestFullscreen() to succeed here).
 function updateFullscreenBtn(){
   const b=document.getElementById('btn-fullscreen'); if(!b) return;
-  b.textContent = document.fullscreenElement ? '⛶ Exit Full Screen' : '⛶ Full Screen';
+  b.textContent = document.fullscreenElement ? '⛶ Exit' : '⛶ Full screen';
 }
 document.addEventListener('fullscreenchange', updateFullscreenBtn);
+
+// Opening a passage puts you straight into full screen. Only fires when the passage
+// actually changes, so paging through its questions — or deliberately pressing Escape
+// and staying put — never yanks you back in. Browsers only honour this while the click
+// that opened the passage still counts as a user gesture; when they refuse, the request
+// rejects harmlessly and the toolbar button remains.
+let fsLastPassage=null;
+function requestFS(){
+  if(document.fullscreenElement) return;
+  const r=document.documentElement.requestFullscreen();
+  if(r&&r.catch) r.catch(()=>{});
+}
+function autoFullscreen(pid){
+  if(fsLastPassage===pid) return;
+  fsLastPassage=pid;
+  requestFS();
+}
 
 /* ---------- passage view ---------- */
 let timerId=null, strikes={};
@@ -502,8 +516,8 @@ function renderPassage(p, qi){
   const ps=passState(p.id); ps.last=qi; ps.opened=Date.now(); save();
   const it=p.items[qi]; const st=itemState(it.id)||{}; strikes=st.strikes||{};
   let h='<div id="pv"><div class="bar-top"><span class="title">'+esc(p.title)+'</span><span class="crumb">'+esc(p.uworld.subject)+' › '+esc(p.uworld.section)+' · '+(p.source==='jw'?'Jack Westin: '+esc(p.lesson)+(p.date?' · '+esc(p.date):''):'KA: '+esc(p.lesson))+'</span>'
-   +'<button class="primary" id="btn-fullscreen">'+(document.fullscreenElement?'⛶ Exit Full Screen':'⛶ Full Screen')+'</button>'
-   +'<span class="right timer" id="timer">0:00</span><button class="small" id="btn-flag">'+(st.flag?'⚑ Flagged':'⚑ Flag')+'</button><a class="small" style="font-size:12px" href="'+esc(p.url)+'" target="_blank" rel="noopener">'+(p.source==='jw'?'open on Jack Westin':'open on Khan Academy')+'</a></div>';
+   +'<span class="right timer" id="timer">0:00</span><button class="small" id="btn-flag">'+(st.flag?'⚑ Flagged':'⚑ Flag')+'</button><a class="small" style="font-size:12px" href="'+esc(p.url)+'" target="_blank" rel="noopener">'+(p.source==='jw'?'open on Jack Westin':'open on Khan Academy')+'</a>'
+   +'<button class="small" id="btn-fullscreen" title="Toggle full screen">'+(document.fullscreenElement?'⛶ Exit':'⛶ Full screen')+'</button></div>';
   h+='<div class="split">'+(p.passage?'<div id="passage" class="md">'+md(p.passage, Object.assign({}, it.widgets, p.passageWidgets||{}), p)+'</div>':'')+'<div id="qpane"'+(p.passage?'':' style="max-width:900px;margin:0 auto;flex-basis:100%"')+'>';
   h+='<div class="qnav">'+p.items.map((x,i)=>{ const s=itemState(x.id); const c=(i===qi?'cur ':'')+(s&&s.answered?(s.correct?'ok':'bad'):'')+(s&&s.flag?' flagged':''); return '<button class="'+c+'" data-q="'+i+'">'+(i+1)+'</button>'; }).join('')+'</div>';
   h+='<div class="stem md">'+md(it.stem, it.widgets, p)+'</div>';
@@ -542,6 +556,7 @@ function renderPassage(p, qi){
     else { document.documentElement.requestFullscreen().catch(e=>console.warn('requestFullscreen failed',e)); }
   };
   updateFullscreenBtn();
+  autoFullscreen(p.id);
   $('#btn-prev').onclick=()=>{ location.hash='#/passage/'+p.id+'/'+(qi-1); };
   $('#btn-next').onclick=()=>{ location.hash='#/passage/'+p.id+'/'+(qi+1); };
   $('#notes').oninput=(e)=>{ ps.notes=e.target.value; save(); };
