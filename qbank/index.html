@@ -29,15 +29,23 @@ textarea{width:100%;min-height:90px;resize:vertical}
 header{display:flex;align-items:center;gap:14px;padding:14px 22px;background:var(--bg2);border-bottom:1px solid var(--line);flex:0 0 auto}
 header h1{font-size:17px;margin:0;font-weight:600;white-space:nowrap}
 header .spacer{flex:1}
-header .stat{color:var(--muted);font-size:13px}
 header .hdr-nav{display:flex;gap:8px}
-header .hdr-util{display:flex;gap:8px;align-items:center;margin-left:18px;padding-left:18px;border-left:1px solid var(--line)}
+.menu-wrap{position:relative}
+#btn-more{font-size:16px;line-height:1;padding:7px 12px}
+.menu{position:absolute;right:0;top:calc(100% + 8px);background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:6px;display:flex;flex-direction:column;gap:2px;min-width:180px;box-shadow:0 10px 28px rgba(0,0,0,.2);z-index:30}
+.menu button,.menu label.small{width:100%;justify-content:flex-start;text-align:left;border-radius:8px;border-color:transparent;background:transparent;padding:8px 10px}
+.menu button:hover,.menu label.small:hover{background:var(--bg3);filter:none}
+.menu label.small{display:block;margin:0;cursor:pointer}
 #layout{display:flex;flex:1;min-height:0}
 #sidebar{display:none;background:var(--bg2);border:1px solid var(--line);border-radius:14px;flex-direction:column;min-height:0;margin-bottom:16px}
 #sidebar.in-dash{display:flex}
 #sidebar.in-dash #tree{max-height:70vh}
-#sidebar .tools{padding:8px;border-bottom:1px solid var(--line);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-#sidebar .tools input{flex:1;min-width:120px}
+#sidebar .tools{padding:8px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+#sidebar .tools-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+#sidebar .tools-row.primary input{flex:1;min-width:120px}
+#sidebar .tools-row.secondary{gap:8px}
+#sidebar .tools-row.secondary select{font-size:11.5px;padding:4px 8px;border-radius:8px;color:var(--muted);background:var(--bg3);border-color:var(--line)}
+#sidebar .tools-row.secondary label{font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:4px;white-space:nowrap;margin-left:auto}
 #tree{overflow:auto;flex:1;font-size:13.5px}
 .tr{display:flex;align-items:center;padding:4px 8px;border-bottom:1px solid var(--line);cursor:pointer;gap:6px}
 .tr:hover{background:var(--bg3)}
@@ -141,27 +149,33 @@ kbd{border:1px solid var(--line);border-radius:6px;padding:0 5px;font-size:12px;
 <header>
   <a class="btn small" id="btn-hub" href="../">← MCAT QMaster</a>
   <h1>MCAT Passage Bank</h1>
-  <span class="stat" id="hdr-stat"></span>
   <span class="spacer"></span>
   <nav class="hdr-nav">
     <button class="small" id="btn-dash">Dashboard</button>
     <button class="small" id="btn-build">Build a Block</button>
   </nav>
-  <div class="hdr-util">
-    <button class="small" id="btn-theme">Theme</button>
-    <button class="small" id="btn-export">Export progress</button>
-    <label class="small"><input type="file" id="imp" class="hidden"><button class="small" id="btn-import">Import</button></label>
-    <button class="small" id="btn-reset">Reset</button>
+  <div class="menu-wrap">
+    <button class="small" id="btn-more" aria-haspopup="true" aria-expanded="false" title="More">⋯</button>
+    <div class="menu hidden" id="hdr-menu">
+      <button class="small" id="btn-theme">Theme</button>
+      <button class="small" id="btn-export">Export progress</button>
+      <label class="small"><input type="file" id="imp" class="hidden"><button class="small" id="btn-import">Import</button></label>
+      <button class="small" id="btn-reset">Reset</button>
+    </div>
   </div>
 </header>
 <div id="layout">
   <aside id="sidebar">
     <div class="tools">
-      <input type="search" id="search" placeholder="Search passages…">
-      <select id="tree-mode"><option value="uworld">UWorld order</option><option value="ka">Khan Academy order</option></select>
-      <select id="source-mode"><option value="all">Khan Academy + Jack Westin</option><option value="ka">Khan Academy only</option><option value="jw">Jack Westin only</option></select>
-      <select id="content-mode"><option value="all">Passages + question sets</option><option value="passage">Passages only</option><option value="qset">Question sets only</option></select>
-      <label style="font-size:12px;color:var(--muted)"><input type="checkbox" id="hide-done"> hide done</label>
+      <div class="tools-row primary">
+        <input type="search" id="search" placeholder="Search passages…">
+      </div>
+      <div class="tools-row secondary">
+        <select id="tree-mode"><option value="uworld">UWorld order</option><option value="ka">Khan Academy order</option></select>
+        <select id="source-mode"><option value="all">Khan Academy + Jack Westin</option><option value="ka">Khan Academy only</option><option value="jw">Jack Westin only</option></select>
+        <select id="content-mode"><option value="all">Passages + question sets</option><option value="passage">Passages only</option><option value="qset">Question sets only</option></select>
+        <label><input type="checkbox" id="hide-done"> hide done</label>
+      </div>
     </div>
     <div class="hdr-row"><span class="name">Section / passage</span><span class="num">Qs</span><span class="num">Done</span><span class="num">Right</span></div>
     <div id="tree"></div>
@@ -291,7 +305,7 @@ function widgetHtml(name, widgets, ctx){
 }
 
 /* ---------- header / router ---------- */
-function refreshHeader(){ const s=stats(DATA.passages); $('#hdr-stat').textContent = s.done+' / '+s.qs+' questions done · '+(s.done?Math.round(100*s.right/s.done):0)+'% correct · '+DATA.passages.length+' passages'; }
+function refreshHeader(){ /* header no longer shows a stats readout; Dashboard KPIs are the single source of truth */ }
 function route(){ const h=location.hash||'#/dash'; const m=h.match(/^#\/passage\/([^/]+)(?:\/(\d+))?/); if(m && byId[m[1]]) renderPassage(byId[m[1]], m[2]?+m[2]:0); else if(h==='#/build') renderBuild(); else renderDash(); renderTree(); }
 window.addEventListener('hashchange', route);
 
@@ -331,7 +345,7 @@ function renderDash(){
    +'<div class="kpi"><div class="v">'+(s.done?Math.round(100*s.right/s.done):0)+'%</div><div class="l">overall accuracy</div></div>'
    +'<div class="kpi"><div class="v">'+DATA.passages.filter(p=>pStatus(p)==='done').length+' <span class="muted" style="font-size:14px">/ '+DATA.passages.length+'</span></div><div class="l">passages completed</div></div>'
    +'<div class="kpi"><div class="v">'+s.flag+'</div><div class="l">flagged questions</div></div></div>';
-  { const ka=stats(DATA.passages.filter(p=>(p.source||'ka')==='ka')), jw=stats(DATA.passages.filter(p=>p.source==='jw')); h+='<div class="card"><b>Khan Academy:</b> '+ka.done+' / '+ka.qs+' questions ('+DATA.passages.filter(p=>(p.source||'ka')==='ka').length+' sets) · <b>Jack Westin:</b> '+jw.done+' / '+jw.qs+' questions ('+DATA.passages.filter(p=>p.source==='jw').length+' dailies)</div>'; }
+  { const ka=stats(DATA.passages.filter(p=>(p.source||'ka')==='ka')), jw=stats(DATA.passages.filter(p=>p.source==='jw')); h+='<div class="muted" style="font-size:12px;margin:2px 0 18px">Khan Academy '+ka.done+'/'+ka.qs+' ('+DATA.passages.filter(p=>(p.source||'ka')==='ka').length+' sets) · Jack Westin '+jw.done+'/'+jw.qs+' ('+DATA.passages.filter(p=>p.source==='jw').length+' dailies)</div>'; }
   h+='<div class="card"><h3 style="margin-top:0">By subject</h3><table class="simple"><tr><th>Subject</th><th>Questions</th><th>Done</th><th>Accuracy</th><th></th></tr>';
   for(const sub of SUBJ){ const st=stats(DATA.passages.filter(p=>p.uworld.subject===sub.name)); const acc=st.done?Math.round(100*st.right/st.done):0; h+='<tr><td>'+esc(sub.name)+'</td><td class="n">'+st.qs+'</td><td class="n">'+st.done+'</td><td class="n">'+(st.done?acc+'%':'–')+'</td><td style="width:180px"><div class="bar"><i style="width:'+acc+'%"></i></div></td></tr>'; }
   h+='</table></div>';
@@ -505,6 +519,15 @@ document.addEventListener('keydown',e=>{ if(e.target.tagName==='TEXTAREA'||e.tar
 /* ---------- header buttons ---------- */
 $('#btn-dash').onclick=()=>{ location.hash='#/dash'; };
 $('#btn-build').onclick=()=>{ location.hash='#/build'; };
+(function(){
+  const moreBtn=$('#btn-more'), menu=$('#hdr-menu');
+  function closeMenu(){ menu.classList.add('hidden'); moreBtn.setAttribute('aria-expanded','false'); }
+  function openMenu(){ menu.classList.remove('hidden'); moreBtn.setAttribute('aria-expanded','true'); }
+  moreBtn.addEventListener('click',(e)=>{ e.stopPropagation(); if(menu.classList.contains('hidden')) openMenu(); else closeMenu(); });
+  document.addEventListener('click',(e)=>{ if(!menu.classList.contains('hidden') && e.target!==moreBtn && !menu.contains(e.target)) closeMenu(); });
+  document.addEventListener('keydown',(e)=>{ if(e.key==='Escape') closeMenu(); });
+  menu.querySelectorAll('button').forEach(b=>b.addEventListener('click',closeMenu));
+})();
 $('#btn-theme').onclick=()=>{ const t=document.documentElement.dataset.theme==='light'?'dark':'light'; document.documentElement.dataset.theme=t; localStorage.setItem('ka-mcat-theme',t); };
 document.documentElement.dataset.theme=localStorage.getItem('ka-mcat-theme')||'light';
 $('#btn-export').onclick=()=>{ const blob=new Blob([JSON.stringify(P)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='mcat-passage-progress-'+new Date().toISOString().slice(0,10)+'.json'; a.click(); };
