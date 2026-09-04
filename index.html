@@ -17,10 +17,9 @@
     --muted:#5B6B85;
     --blue:#2F6FED;
     --blue-ink:#FFFFFF;
-    --sky:#EAF1FE;
-    --sky-ink:#0F2A5C;
-    --deep:#0B2A63;
-    --deep-ink:#EAF1FE;
+    --pale1:#F5F9FF;
+    --pale2:#ECF4FF;
+    --pale3:#E3EEFF;
     --focus:#2F6FED;
   }
 
@@ -62,13 +61,13 @@
     transition:transform .15s ease;
   }
   .card:hover{transform:translateY(-2px)}
-  .card .kicker{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;opacity:.65}
-  .card h3{font-size:19px;font-weight:700;margin-top:6px}
-  .card .icon{width:34px;height:34px;opacity:.85}
-  .card .go{font-size:13px;font-weight:700}
-  .card.blue{background:var(--blue);color:var(--blue-ink)}
-  .card.sky{background:var(--sky);color:var(--sky-ink)}
-  .card.deep{background:var(--deep);color:var(--deep-ink)}
+  .card .kicker{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--blue)}
+  .card h3{font-size:19px;font-weight:700;margin-top:6px;color:var(--ink)}
+  .card .icon{width:34px;height:34px;color:var(--blue)}
+  .card .go{font-size:13px;font-weight:700;color:var(--blue)}
+  .card.blue{background:var(--pale1)}
+  .card.sky{background:var(--pale2)}
+  .card.deep{background:var(--pale3)}
 
   .sechead{margin:0 auto 26px;max-width:60ch}
   .sechead h2{font-size:clamp(24px,3.6vw,32px)}
@@ -81,6 +80,8 @@
   .embed iframe{display:block;width:100%;border:none;background:var(--surface)}
   .embed.tall iframe{height:680px}
   .embed.med iframe{height:420px}
+  .embed.flush{border:none;border-radius:0;background:none}
+  .embed.flush iframe{height:82vh;min-height:620px;border-radius:12px}
 
   .doclist{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:16px}
   .dochip{
@@ -133,23 +134,16 @@
 <header>
   <div class="navbar">
     <button class="brand" data-goto="home">
-      <svg class="mascot" viewBox="0 0 8 8" shape-rendering="crispEdges" aria-hidden="true">
-        <rect x="2" y="0" width="4" height="1" fill="#2F6FED"/>
-        <rect x="1" y="1" width="6" height="1" fill="#2F6FED"/>
-        <rect x="0" y="2" width="2" height="1" fill="#2F6FED"/>
-        <rect x="3" y="2" width="2" height="1" fill="#2F6FED"/>
-        <rect x="6" y="2" width="2" height="1" fill="#2F6FED"/>
-        <rect x="0" y="3" width="1" height="1" fill="#2F6FED"/>
-        <rect x="2" y="3" width="4" height="1" fill="#2F6FED"/>
-        <rect x="7" y="3" width="1" height="1" fill="#2F6FED"/>
-        <rect x="0" y="4" width="8" height="1" fill="#2F6FED"/>
-        <rect x="0" y="5" width="8" height="1" fill="#2F6FED"/>
-        <rect x="1" y="6" width="6" height="1" fill="#2F6FED"/>
-        <rect x="2" y="7" width="4" height="1" fill="#2F6FED"/>
-        <rect x="2" y="2" width="1" height="1" fill="#0B1A3A"/>
-        <rect x="5" y="2" width="1" height="1" fill="#0B1A3A"/>
-        <rect x="1" y="3" width="1" height="1" fill="#FFB4C6"/>
-        <rect x="6" y="3" width="1" height="1" fill="#FFB4C6"/>
+      <svg class="mascot" viewBox="0 0 100 100" aria-hidden="true">
+        <defs>
+          <linearGradient id="mg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#1E4FD1"/>
+            <stop offset="1" stop-color="#4FA8F0"/>
+          </linearGradient>
+        </defs>
+        <circle cx="50" cy="50" r="48" fill="#fff"/>
+        <circle cx="50" cy="50" r="44" fill="url(#mg)"/>
+        <path d="M32,70 L32,30 L50,54 L68,30 L68,70" fill="none" stroke="#fff" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
       <span><span class="name">MCAT QMaster</span><span class="tag">Free MCAT prep</span></span>
     </button>
@@ -218,20 +212,20 @@
   <section class="view" id="view-qbanks">
     <button class="back" data-goto="home">← Home</button>
     <div class="sechead"><h2>Qbanks</h2><p>Passages and discretes from Khan Academy + Jack Westin, built into blocks.</p></div>
-    <div class="embed tall"><iframe src="qbank/" title="Qbank" loading="lazy"></iframe></div>
+    <div class="embed flush"><iframe src="qbank/" title="Qbank"></iframe></div>
   </section>
 
   <section class="view" id="view-ai">
     <button class="back" data-goto="home">← Home</button>
     <div class="sechead"><h2>AI Practice</h2><p>Adaptive, AI-generated MCAT questions.</p></div>
     <div class="actionrow"><a class="btn primary" href="https://mcatqmaster.ai.studio/" target="_blank" rel="noopener">Open in new tab ↗</a></div>
-    <div class="embed tall"><iframe src="https://mcatqmaster.ai.studio/" title="MCAT QMaster AI Studio" loading="lazy"></iframe></div>
+    <div class="embed tall"><iframe src="https://mcatqmaster.ai.studio/" title="MCAT QMaster AI Studio"></iframe></div>
   </section>
 
   <section class="view" id="view-videos">
     <button class="back" data-goto="home">← Home</button>
     <div class="sechead"><h2>Videos</h2><p>Full-length lessons from the MCAT QMaster channel.</p></div>
-    <div class="embed med"><iframe id="videoframe" src="https://www.youtube.com/embed/iMfYv-HA3QU" title="MCAT QMaster video" loading="lazy" allowfullscreen></iframe></div>
+    <div class="embed med"><iframe id="videoframe" src="https://www.youtube.com/embed/iMfYv-HA3QU" title="MCAT QMaster video" allowfullscreen></iframe></div>
     <div class="vgrid" id="videoGrid">
       <button class="vcard" data-vid="iMfYv-HA3QU" aria-current="true">
         <img src="https://img.youtube.com/vi/iMfYv-HA3QU/mqdefault.jpg" alt="">
@@ -284,7 +278,7 @@
       <button class="dochip" data-doc="https://mozilla.github.io/pdf.js/web/viewer.html?file=https%3A%2F%2Fraw.githubusercontent.com%2Ftiffanythanh%2Fpdf-assets%2Fmain%2FMCATBros%2520334-Page%2520P_S%2520Content%2520Review%2520Document.pdf">Psych/Soc — MCATBros</button>
     </div>
 
-    <div class="embed tall"><iframe id="docframe" src="https://mozilla.github.io/pdf.js/web/viewer.html?file=https%3A%2F%2Fraw.githubusercontent.com%2Ftiffanythanh%2Fpdf-assets%2Fmain%2FMileDown%2520Review%2520Sheet-%2520compressed.pdf" title="Review sheet" loading="lazy"></iframe></div>
+    <div class="embed tall"><iframe id="docframe" src="https://mozilla.github.io/pdf.js/web/viewer.html?file=https%3A%2F%2Fraw.githubusercontent.com%2Ftiffanythanh%2Fpdf-assets%2Fmain%2FMileDown%2520Review%2520Sheet-%2520compressed.pdf" title="Review sheet"></iframe></div>
   </section>
 
   <section class="view" id="view-anki">
@@ -346,6 +340,7 @@
       document.getElementById("videoframe").scrollIntoView({behavior:"smooth", block:"nearest"});
     }
   });
+  window.addEventListener("hashchange", function(){ goto(location.hash.slice(1)); });
   goto((location.hash || "#home").slice(1));
 </script>
 </body>
