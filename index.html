@@ -278,6 +278,7 @@
       <button class="dochip" data-doc="https://mozilla.github.io/pdf.js/web/viewer.html?file=https%3A%2F%2Fraw.githubusercontent.com%2Ftiffanythanh%2Fpdf-assets%2Fmain%2FMCATBros%2520334-Page%2520P_S%2520Content%2520Review%2520Document.pdf">Psych/Soc — MCATBros</button>
     </div>
 
+    <div class="actionrow"><button class="btn soft" id="pdfFullscreenBtn">⛶ Fullscreen</button></div>
     <div class="embed tall"><iframe id="docframe" src="https://mozilla.github.io/pdf.js/web/viewer.html?file=https%3A%2F%2Fraw.githubusercontent.com%2Ftiffanythanh%2Fpdf-assets%2Fmain%2FMileDown%2520Review%2520Sheet-%2520compressed.pdf" title="Review sheet"></iframe></div>
   </section>
 
@@ -338,6 +339,14 @@
       document.querySelectorAll(".vcard").forEach(function(c){ c.removeAttribute("aria-current"); });
       v.setAttribute("aria-current","true");
       document.getElementById("videoframe").scrollIntoView({behavior:"smooth", block:"nearest"});
+      return;
+    }
+
+    if (e.target.closest("#pdfFullscreenBtn")){
+      e.preventDefault();
+      var el = document.getElementById("docframe");
+      if (el.requestFullscreen) el.requestFullscreen();
+      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
     }
   });
   window.addEventListener("hashchange", function(){ goto(location.hash.slice(1)); });
