@@ -36,8 +36,8 @@
   .navbar{max-width:1040px;margin:0 auto;padding:18px 28px;display:flex;align-items:center;gap:28px}
   .brand{display:flex;align-items:center;gap:10px;background:none;border:none;cursor:pointer;padding:0;text-align:left;flex:0 0 auto;font-family:"Manrope",system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
   .brand .mascot{width:28px;height:28px;flex:0 0 auto}
-  .brand .name{display:block;font-weight:500;font-size:18px;letter-spacing:-.025em;color:var(--ink);line-height:1.2;white-space:nowrap}
-  .brand .tag{display:block;font-size:11.5px;font-weight:400;color:var(--muted);letter-spacing:0;white-space:nowrap}
+  .brand .name{display:block;font-weight:800;font-size:18px;letter-spacing:-.025em;color:var(--ink);line-height:1.2;white-space:nowrap}
+  .brand .tag{display:block;font-size:11.5px;font-weight:500;color:var(--muted);letter-spacing:0;white-space:nowrap}
   nav.links{display:flex;gap:2px;margin-left:auto;flex-wrap:wrap}
   nav.links button,nav.links a{font:600 13.5px "Manrope",sans-serif;background:none;border:none;color:var(--muted);padding:8px 12px;border-radius:6px;cursor:pointer;text-decoration:none}
   nav.links button:hover,nav.links a:hover{color:var(--blue)}
@@ -187,11 +187,7 @@
     </button>
     <nav class="links" id="nav">
       <button data-goto="statement">Statement</button>
-      <a href="qbank/">Qbanks</a>
-      <button data-goto="ai">AI Practice</button>
-      <button data-goto="videos">Videos</button>
-      <button data-goto="reviews">Review Sheets</button>
-      <button data-goto="anki">Anki</button>
+      <button data-goto="about">About us</button>
     </nav>
   </div>
 </header>
@@ -245,7 +241,14 @@
     <div class="statement">
       <p>Good MCAT prep shouldn't cost a fortune. Every resource on this site is free — we didn't build most of it, we just found the best of it and put it in one place.</p>
       <p>Use what helps. Skip what doesn't.</p>
-      <p class="soon">"About Us" coming soon</p>
+    </div>
+  </section>
+
+  <section class="view" id="view-about">
+    <button class="back" data-goto="home">← Home</button>
+    <div class="sechead"><h2>About us</h2></div>
+    <div class="statement">
+      <p class="soon">Coming soon...</p>
     </div>
   </section>
 
@@ -317,7 +320,7 @@
 
     <div class="label">All subjects</div>
     <div class="doclist">
-      <button class="dochip" aria-current="true" data-doc="https://mozilla.github.io/pdf.js/web/viewer.html?file=https%3A%2F%2Fraw.githubusercontent.com%2Ftiffanythanh%2Fpdf-assets%2Fmain%2FMCAT%2520Master%2520Review%2520Sheets.pdf">Master Sheets</button>
+      <button class="dochip" aria-current="true" data-doc="https://mozilla.github.io/pdf.js/web/viewer.html?file=https%3A%2F%2Fraw.githubusercontent.com%2Ftiffanythanh%2Fpdf-assets%2Fmain%2FMCAT%2520Master%2520Review%2520Sheets.pdf">QMaster</button>
       <button class="dochip" data-doc="https://mozilla.github.io/pdf.js/web/viewer.html?file=https%3A%2F%2Fraw.githubusercontent.com%2Ftiffanythanh%2Fpdf-assets%2Fmain%2FMileDown%2520Review%2520Sheet-%2520compressed.pdf">MileDown</button>
       <button class="dochip" data-doc="https://docs.google.com/document/d/1F49TNYfUvlIrLA475nfqS_tmGoFW-r9nLFR3yyIolEA/preview">MCATalyst</button>
     </div>
@@ -358,7 +361,7 @@
 <footer><div class="wrap">MCAT QMaster ©</div></footer>
 
 <script>
-  var VIEWS = ["home","statement","ai","videos","reviews","anki"];
+  var VIEWS = ["home","statement","about","ai","videos","reviews","anki"];
   function goto(id){
     if (VIEWS.indexOf(id) === -1) id = "home";
     VIEWS.forEach(function(v){
