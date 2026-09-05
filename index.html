@@ -186,6 +186,7 @@
     </button>
     <nav class="links" id="nav">
       <button data-goto="statement">Statement</button>
+      <button data-goto="tutor">1-on-1 Tutor/Mentor</button>
       <button data-goto="about">About us</button>
     </nav>
   </div>
@@ -235,6 +236,14 @@
     <div class="statement">
       <p>Good MCAT prep shouldn't cost a fortune. Every resource on this site is free — we didn't build most of it, we just found the best of it and put it in one place.</p>
       <p>Use what helps. Skip what doesn't.</p>
+    </div>
+  </section>
+
+  <section class="view" id="view-tutor">
+    <button class="back" data-goto="home">← Home</button>
+    <div class="sechead"><h2>1-on-1 Tutor/Mentor</h2></div>
+    <div class="statement">
+      <p class="soon">Coming soon...</p>
     </div>
   </section>
 
@@ -355,7 +364,7 @@
 <footer><div class="wrap">MCAT QMaster ©</div></footer>
 
 <script>
-  var VIEWS = ["home","statement","about","ai","videos","reviews","anki"];
+  var VIEWS = ["home","statement","tutor","about","ai","videos","reviews","anki"];
   function goto(id){
     if (VIEWS.indexOf(id) === -1) id = "home";
     VIEWS.forEach(function(v){
