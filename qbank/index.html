@@ -95,6 +95,15 @@ header .hdr-nav{display:flex;gap:8px}
 .kpi .v{font-size:26px;font-weight:700}.kpi .l{color:var(--muted);font-size:12.5px}
 .bar{height:8px;background:var(--bg3);border-radius:6px;overflow:hidden;margin-top:6px}
 .bar>i{display:block;height:100%;background:var(--ok)}
+.statfold{background:var(--bg2);border:1px solid var(--line);border-radius:16px;margin-bottom:18px}
+.statfold > summary{list-style:none;cursor:pointer;padding:14px 20px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.statfold > summary::-webkit-details-marker{display:none}
+.statfold > summary::before{content:"▸";color:var(--muted);font-size:11px;flex:0 0 auto}
+.statfold[open] > summary::before{content:"▾"}
+.statfold .sf-t{font-weight:700;font-size:14.5px}
+.statfold .sf-n{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+.statfold .sf-body{padding:2px 20px 18px}
+.statfold .sf-body .card{background:transparent;border:none;border-radius:0;padding:14px 0 0;margin:0}
 table.simple{border-collapse:collapse;width:100%;font-size:13.5px}
 table.simple th,table.simple td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left}
 table.simple td.n{text-align:right;font-variant-numeric:tabular-nums}
@@ -434,25 +443,38 @@ function renderDash(){
   parkSidebar();
   const s=stats(DATA.passages);
   const recent=(P.log||[]).slice(-8).reverse();
-  let h='<div class="page"><h2 style="margin-top:0">Dashboard</h2><div class="grid">'
+  const acc0 = s.done ? Math.round(100*s.right/s.done) : 0;
+  let h='<div class="page"><h2 style="margin-top:0">Dashboard</h2>';
+
+  // The passage tree is the point of the dashboard, so it stays open at the
+  // top. Everything below it is progress analytics, folded away by default.
+  h+='<h3 style="margin:0 0 8px">Passages by section</h3><div id="tree-slot"></div>';
+
+  h+='<details class="statfold"><summary><span class="sf-t">Your stats</span>'
+   +'<span class="sf-n">'+s.done.toLocaleString()+' / '+s.qs.toLocaleString()+' answered'
+   +(s.done?' · '+acc0+'% accuracy':'')
+   +(s.flag?' · '+s.flag+' flagged':'')+'</span></summary><div class="sf-body">';
+
+  h+='<div class="grid">'
    +'<div class="kpi"><div class="v">'+s.done+' <span class="muted" style="font-size:14px">/ '+s.qs+'</span></div><div class="l">questions answered</div><div class="bar"><i style="width:'+(100*s.done/s.qs)+'%"></i></div></div>'
-   +'<div class="kpi"><div class="v">'+(s.done?Math.round(100*s.right/s.done):0)+'%</div><div class="l">overall accuracy</div></div>'
+   +'<div class="kpi"><div class="v">'+acc0+'%</div><div class="l">overall accuracy</div></div>'
    +'<div class="kpi"><div class="v">'+DATA.passages.filter(p=>pStatus(p)==='done').length+' <span class="muted" style="font-size:14px">/ '+DATA.passages.length+'</span></div><div class="l">passages completed</div></div>'
    +'<div class="kpi"><div class="v">'+s.flag+'</div><div class="l">flagged questions</div></div></div>';
-  { const ka=stats(DATA.passages.filter(p=>(p.source||'ka')==='ka')), jw=stats(DATA.passages.filter(p=>p.source==='jw')); h+='<div class="muted" style="font-size:12px;margin:2px 0 18px">Khan Academy '+ka.done+'/'+ka.qs+' ('+DATA.passages.filter(p=>(p.source||'ka')==='ka').length+' sets) · Jack Westin '+jw.done+'/'+jw.qs+' ('+DATA.passages.filter(p=>p.source==='jw').length+' dailies)</div>'; }
+
+  { const ka=stats(DATA.passages.filter(p=>(p.source||'ka')==='ka')), jw=stats(DATA.passages.filter(p=>p.source==='jw')); h+='<div class="muted" style="font-size:12px;margin:6px 0 4px">Khan Academy '+ka.done+'/'+ka.qs+' ('+DATA.passages.filter(p=>(p.source||'ka')==='ka').length+' sets) · Jack Westin '+jw.done+'/'+jw.qs+' ('+DATA.passages.filter(p=>p.source==='jw').length+' dailies)</div>'; }
   h+='<div class="card"><h3 style="margin-top:0">By subject</h3><table class="simple"><tr><th>Subject</th><th>Questions</th><th>Done</th><th>Accuracy</th><th></th></tr>';
   for(const sub of SUBJ){ const st=stats(DATA.passages.filter(p=>p.uworld.subject===sub.name)); const acc=st.done?Math.round(100*st.right/st.done):0; h+='<tr><td>'+esc(sub.name)+'</td><td class="n">'+st.qs+'</td><td class="n">'+st.done+'</td><td class="n">'+(st.done?acc+'%':'–')+'</td><td style="width:180px"><div class="bar"><i style="width:'+acc+'%"></i></div></td></tr>'; }
   h+='</table></div>';
   h+='<div class="card"><h3 style="margin-top:0">By section</h3><table class="simple"><tr><th>Section</th><th>Qs</th><th>Done</th><th>Accuracy</th></tr>';
   for(const sub of SUBJ){ for(const sec of sub.sections){ const list=passagesOf(sub.name,sec); if(!list.length) continue; const st=stats(list); h+='<tr><td><span class="muted">'+esc(sub.name)+' ›</span> '+esc(sec)+'</td><td class="n">'+st.qs+'</td><td class="n">'+st.done+'</td><td class="n">'+(st.done?Math.round(100*st.right/st.done)+'%':'–')+'</td></tr>'; } }
   h+='</table></div>';
+  if(recent.length){ h+='<div class="card"><h3 style="margin-top:0">Recent activity</h3>'; for(const r of recent){ const p=byId[r.p]; if(!p) continue; h+='<div class="list-item"><span class="t"><a href="#/passage/'+p.id+'/'+r.q+'">'+esc(p.title)+'</a> <span class="muted">Q'+(r.q+1)+'</span></span><span class="'+(r.ok?'verdict ok':'verdict bad')+'">'+(r.ok?'correct':'incorrect')+'</span><span class="muted" style="width:150px;text-align:right">'+new Date(r.t).toLocaleString()+'</span></div>'; } h+='</div>'; }
+  h+='</div></details>';
   const next=DATA.passages.find(p=>pStatus(p)==='partial')||DATA.passages.find(p=>pStatus(p)==='none');
   if(next) h+='<div class="card"><b>Continue:</b> <a href="#/passage/'+next.id+'">'+esc(next.title)+'</a> <span class="pill">'+esc(next.uworld.subject)+' › '+esc(next.uworld.section)+'</span></div>';
   const flagged=DATA.passages.filter(p=>p.items.some(it=>itemState(it.id)&&itemState(it.id).flag));
   if(flagged.length){ h+='<div class="card"><h3 style="margin-top:0">Flagged for review</h3>'; for(const p of flagged){ h+='<div class="list-item"><span class="t"><a href="#/passage/'+p.id+'">'+esc(p.title)+'</a></span><span class="pill">'+p.items.filter(it=>itemState(it.id)&&itemState(it.id).flag).length+' flagged</span></div>'; } h+='</div>'; }
-  if(recent.length){ h+='<div class="card"><h3 style="margin-top:0">Recent activity</h3>'; for(const r of recent){ const p=byId[r.p]; if(!p) continue; h+='<div class="list-item"><span class="t"><a href="#/passage/'+p.id+'/'+r.q+'">'+esc(p.title)+'</a> <span class="muted">Q'+(r.q+1)+'</span></span><span class="'+(r.ok?'verdict ok':'verdict bad')+'">'+(r.ok?'correct':'incorrect')+'</span><span class="muted" style="width:150px;text-align:right">'+new Date(r.t).toLocaleString()+'</span></div>'; } h+='</div>'; }
   h+='<div class="card muted" style="font-size:13px">Sources: Khan Academy MCAT practice passages (free, created with the AAMC; CC BY-NC-SA) and Jack Westin free daily passages (© Jack Westin). Saved offline for personal study only; do not redistribute. Progress is stored in this browser; use <b>Export progress</b> to back it up. Data snapshot: '+esc(DATA.generated)+'.</div></div>';
-  h=h.replace('<div class="grid">','<h3 style="margin:0 0 8px">Passages by section</h3><div id="tree-slot"></div><div class="grid">');
   $('#content').innerHTML=h;
   const sb=$('#sidebar'); $('#tree-slot').appendChild(sb); sb.classList.add('in-dash');
 }
