@@ -468,7 +468,7 @@ function renderDash(){
   if(next) h+='<div class="card"><b>Continue:</b> <a href="#/passage/'+next.id+'">'+esc(next.title)+'</a> <span class="pill">'+esc(next.uworld.subject)+' › '+esc(next.uworld.section)+'</span></div>';
   const flagged=DATA.passages.filter(p=>p.items.some(it=>itemState(it.id)&&itemState(it.id).flag));
   if(flagged.length){ h+='<div class="card"><h3 style="margin-top:0">Flagged for review</h3>'; for(const p of flagged){ h+='<div class="list-item"><span class="t"><a href="#/passage/'+p.id+'">'+esc(p.title)+'</a></span><span class="pill">'+p.items.filter(it=>itemState(it.id)&&itemState(it.id).flag).length+' flagged</span></div>'; } h+='</div>'; }
-  h+='<div class="card muted" style="font-size:13px">Sources: Khan Academy MCAT practice passages (free, created with the AAMC; CC BY-NC-SA) and Jack Westin free daily passages (© Jack Westin). Saved offline for personal study only; do not redistribute. Progress is stored in this browser; use <b>Export progress</b> to back it up. Data snapshot: '+esc(DATA.generated)+'.</div></div>';
+  h+='<div class="card muted" style="font-size:13px">Sources: Khan Academy MCAT practice passages (free, created with the AAMC; CC BY-NC-SA) and Jack Westin free daily passages (© Jack Westin). Saved offline for personal study only; do not redistribute. Progress is stored in this browser; use <b>Export progress</b> to back it up. Data snapshot: '+esc(DATA.generated)+'. <a href="https://qbank2023.tiffany-dinh04.workers.dev/" rel="noopener" style="color:inherit;text-decoration:none;opacity:.55" title="Science qbank (sign-in required)">·&nbsp;science</a></div></div>';
   $('#content').innerHTML=h;
   const sb=$('#sidebar'); $('#tree-slot').appendChild(sb); sb.classList.add('in-dash');
 }
